@@ -27,5 +27,5 @@ answer_column: "answer"
 summary_groupby: ["subject_name"]
 
 # ── Inference set creation (used by dataset processing --inference) ───────────
-num_samples: 100                  # rows to sample for inference
-stratify_column: "subject_name"   # proportional stratified sampling by subject
+num_samples: 10                  # rows to sample for inference
+stratify_column: "topic_name"   # proportional stratified sampling by topic
