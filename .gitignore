@@ -76,7 +76,8 @@ venv.bak/
 *.pkl
 *.joblib
 # data/
-data/medmcqa/medmcqa_prompts.parquet
+data/amqa/*.parquet
+data/medmcqa/*.parquet
 models/
 *.pt
 *.pth
