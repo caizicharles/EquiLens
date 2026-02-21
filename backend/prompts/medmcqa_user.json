@@ -1,0 +1,3 @@
+{
+  "template": "Subject: {subject_name}  |  Topic: {topic_name}\n\nQuestion:\n{question}\n\nOptions:\n  A. {opa}\n  B. {opb}\n  C. {opc}\n  D. {opd}\n\nAnswer:"
+}

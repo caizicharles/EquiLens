@@ -1,0 +1,34 @@
+# ── MedMCQA Evaluation Config: Claude Sonnet 4.6 ────────────────────────────
+# This file fully specifies a single evaluation run.
+# A copy is saved alongside results for reproducibility.
+
+# ── Model ────────────────────────────────────────────────────────────────────
+model_name: "claude-sonnet-4-6"
+provider: "claude"
+
+# ── Generation parameters ────────────────────────────────────────────────────
+temperature: 0.1
+seed: 0
+max_tokens: 128
+
+# ── Data ─────────────────────────────────────────────────────────────────────
+data_path: "data/medmcqa/medmcqa_inference.parquet"
+
+# ── Prompts ──────────────────────────────────────────────────────────────────
+system_prompt: "prompts/medmcqa_system.json"
+user_prompt: "prompts/medmcqa_user.json"
+
+# ── Output ───────────────────────────────────────────────────────────────────
+output_dir: "results/medmcqa"
+
+# ── Dataset schema ───────────────────────────────────────────────────────────
+id_columns: ["id"]
+answer_column: "answer"
+summary_groupby: ["subject_name"]
+
+# ── Inference set creation (used by dataset processing --inference) ───────────
+num_samples: 10                  # rows to sample for inference
+stratify_column: "topic_name"   # proportional stratified sampling by subject
+
+# ── Provider-specific (Claude batch API) ─────────────────────────────────────
+poll_interval: 30  # seconds between batch status checks

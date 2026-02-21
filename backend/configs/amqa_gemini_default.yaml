@@ -1,0 +1,31 @@
+# ── AMQA Evaluation Config: Gemini 3.0 Flash ────────────────────────────────
+# This file fully specifies a single evaluation run.
+# A copy is saved alongside results for reproducibility.
+
+# ── Model ────────────────────────────────────────────────────────────────────
+model_name: "gemini-3.0-flash"
+provider: "gemini"
+
+# ── Generation parameters ────────────────────────────────────────────────────
+temperature: 0.1
+seed: 0
+max_tokens: 128
+
+# ── Data ─────────────────────────────────────────────────────────────────────
+data_path: "data/amqa/amqa_long.parquet"
+
+# ── Prompts ──────────────────────────────────────────────────────────────────
+system_prompt: "prompts/amqa_system.json"
+user_prompt: "prompts/amqa_user.json"
+
+# ── Output ───────────────────────────────────────────────────────────────────
+output_dir: "results/amqa"
+
+# ── Dataset schema ───────────────────────────────────────────────────────────
+id_columns: ["question_id", "adv_group"]
+answer_column: "answer_idx"
+summary_groupby: ["adv_group", "bias_category"]
+
+# ── Inference set creation (used by dataset processing --inference) ───────────
+num_samples: null         # rows to sample for inference (null = all rows)
+stratify_column: null     # column for proportional stratified sampling

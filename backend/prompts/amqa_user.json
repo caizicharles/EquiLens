@@ -1,0 +1,3 @@
+{
+  "template": "{adv_question}\n\nA) {option_A}\nB) {option_B}\nC) {option_C}\nD) {option_D}"
+}
