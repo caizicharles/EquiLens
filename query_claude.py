@@ -14,6 +14,8 @@ import anthropic
 DEFAULT_MODEL = "claude-opus-4-6"
 DEFAULT_INPUT = "data/medmcqa/medmcqa_prompts.parquet"
 DEFAULT_OUTPUT = "data/medmcqa/medmcqa_responses_claude.parquet"
+CITY_SUBSET_DIR = "data/medmcqa/city_subsets"
+CITIES = ["london", "edinburgh", "dublin"]
 DEFAULT_N = 100  # number of rows to query (0 = all)
 RPM_LIMIT = 50  # requests per minute; adjust to your tier
 CHECKPOINT_EVERY = 50  # save intermediate results every N rows
@@ -27,14 +29,23 @@ SYSTEM_PROMPT = (
 
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Query Claude on MEDMCQA prompts")
-    p.add_argument("--input", default=DEFAULT_INPUT, help="Input parquet path")
-    p.add_argument("--output", default=DEFAULT_OUTPUT, help="Output parquet path")
+    p.add_argument("--city", choices=CITIES,
+                   help="City name — auto-sets input/output to city subset paths")
+    p.add_argument("--input", default=None, help="Input parquet path")
+    p.add_argument("--output", default=None, help="Output parquet path")
     p.add_argument("--model", default=DEFAULT_MODEL, help="Claude model name")
     p.add_argument("--n", type=int, default=DEFAULT_N,
                    help="Number of rows to query (0 = all)")
     p.add_argument("--rpm", type=int, default=RPM_LIMIT,
                    help="Max requests per minute")
-    return p.parse_args()
+    args = p.parse_args()
+    if args.city:
+        args.input = args.input or f"{CITY_SUBSET_DIR}/medmcqa_{args.city}.parquet"
+        args.output = args.output or f"{CITY_SUBSET_DIR}/medmcqa_{args.city}_responses_claude.parquet"
+    else:
+        args.input = args.input or DEFAULT_INPUT
+        args.output = args.output or DEFAULT_OUTPUT
+    return args
 
 
 def load_api_key() -> str:

@@ -29,7 +29,7 @@ def build_prompt(row: pd.Series) -> str:
         for label, col in zip(OPTION_LABELS, OPTION_COLS)
     )
     return (
-        f"Subject: {row['subject_name']}  |  Topic: {row['topic_name']}\n\n"
+        # f"Subject: {row['subject_name']}  |  Topic: {row['topic_name']}\n\n"
         f"Question:\n{row['question']}\n\n"
         f"Options:\n{options}\n\n"
         f"Answer:"
