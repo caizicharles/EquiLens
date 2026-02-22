@@ -5,10 +5,12 @@ import time
 import json
 import argparse
 from pathlib import Path
+from typing import Literal
 
 import pandas as pd
 from dotenv import load_dotenv
 from google import genai
+from pydantic import BaseModel, Field
 
 # ── Config ──────────────────────────────────────────────────────────────────
 DEFAULT_MODEL = "gemini-3-flash-preview"
@@ -60,17 +62,8 @@ def load_api_key() -> str:
     return key
 
 
-RESPONSE_SCHEMA = {
-    "type": "object",
-    "properties": {
-        "answer": {
-            "type": "string",
-            "description": "The letter of the correct answer: A, B, C, or D",
-            "enum": ["A", "B", "C", "D"],
-        }
-    },
-    "required": ["answer"],
-}
+class MCQResponse(BaseModel):
+    answer: Literal["A", "B", "C", "D"] = Field(description="The letter of the correct answer: A, B, C, or D")
 
 
 def query_gemini(client: genai.Client, model: str, prompt: str) -> str:
@@ -84,12 +77,12 @@ def query_gemini(client: genai.Client, model: str, prompt: str) -> str:
             max_output_tokens=64,
             seed=42,
             response_mime_type="application/json",
-            response_schema=RESPONSE_SCHEMA,
+            response_json_schema=MCQResponse.model_json_schema(),
         ),
     )
     if response.text:
-        data = json.loads(response.text)
-        return data.get("answer", "")
+        parsed = MCQResponse.model_validate_json(response.text)
+        return parsed.answer
     return ""
 
 
@@ -138,6 +131,7 @@ def main() -> None:
         t0 = time.time()
         try:
             resp = query_gemini(client, args.model, row["prompt"])
+            print(f"response: {resp!r}")
             responses[i] = resp
             completed += 1
         except Exception as e:
