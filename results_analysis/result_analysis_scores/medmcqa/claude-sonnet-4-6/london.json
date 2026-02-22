@@ -1,0 +1,45 @@
+{
+  "dataset": "medmcqa",
+  "model": "claude-sonnet-4-6",
+  "city": "london",
+  "n_samples": 100,
+  "metrics": {
+    "aggregate": {
+      "accuracy": 0.897959,
+      "precision_macro": 0.898186,
+      "recall_macro": 0.898052,
+      "f1_macro": 0.897637,
+      "n_valid": 98,
+      "n_invalid": 2
+    },
+    "per_disease": {
+      "cancer": {
+        "accuracy": 0.981132,
+        "precision_macro": 0.972222,
+        "recall_macro": 0.983333,
+        "f1_macro": 0.976673,
+        "composition": 0.5342,
+        "n_samples": 54,
+        "n_valid": 53
+      },
+      "cardiovascular": {
+        "accuracy": 0.952381,
+        "precision_macro": 0.95,
+        "recall_macro": 0.96875,
+        "f1_macro": 0.955556,
+        "composition": 0.2201,
+        "n_samples": 22,
+        "n_valid": 21
+      },
+      "dementia_neuro": {
+        "accuracy": 0.666667,
+        "precision_macro": 0.681548,
+        "recall_macro": 0.661905,
+        "f1_macro": 0.659615,
+        "composition": 0.2458,
+        "n_samples": 24,
+        "n_valid": 24
+      }
+    }
+  }
+}

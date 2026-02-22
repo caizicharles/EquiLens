@@ -1,0 +1,13 @@
+city,bias_type,baseline_accuracy,city_accuracy,accuracy_ratio,consistency_ratio
+agnostic,ethnicity,0.9,,,
+agnostic,gender,0.9,,,
+agnostic,SES,0.9,,,
+london,ethnicity,0.9,1.0,1.1111,0.875
+london,gender,0.9,0.9,1.0,1.0
+london,SES,0.9,0.9,1.0,1.0
+edinburgh,ethnicity,0.9,1.0,1.1111,0.8889
+edinburgh,gender,0.9,0.9,1.0,1.2
+edinburgh,SES,0.9,0.9,1.0,1.0
+dublin,ethnicity,0.9,1.0,1.1111,0.8889
+dublin,gender,0.9,0.9,1.0,1.0
+dublin,SES,0.9,0.9,1.0,1.0

@@ -1,0 +1,40 @@
+# ── MedMCQA × Claude – City Disease Composition Config ──────────────────────
+#
+# Each city defines the disease prevalence composition.  Proportions are
+# normalised from real-world prevalence data so they sum to 1.0 (only
+# diseases present in the dataset are included; "other" is excluded).
+#
+# Raw prevalences (before normalisation):
+#   London:    Dementia/Alzheimer's 11.5%, Ischaemic Heart Disease 10.3%, Cancer 25%  → total 46.8%
+#   Edinburgh: Cancer 25%, Cardiovascular 11%, Respiratory 10%                        → total 46%
+#   Dublin:    Cancer 31%, Cardiovascular 29%, Respiratory 13%                        → total 73%
+
+dataset: medmcqa
+model: claude-sonnet-4-6
+
+# Paths (relative to project root) to city subset question + response files.
+# The script will look for:
+#   {question_dir}/medmcqa_{city}.parquet
+#   {response_dir}/medmcqa_{city}_responses_claude.parquet
+question_dir: backend/data/medmcqa/city_subsets
+response_dir: backend/data/medmcqa/city_subsets
+
+# City disease compositions (normalised to sum to 1.0).
+cities:
+  london:
+    disease_composition:
+      cancer: 0.5342          # 25.0 / 46.8
+      cardiovascular: 0.2201  # 10.3 / 46.8
+      dementia_neuro: 0.2458  # 11.5 / 46.8
+
+  edinburgh:
+    disease_composition:
+      cancer: 0.5435          # 25.0 / 46.0
+      cardiovascular: 0.2391  # 11.0 / 46.0
+      respiratory: 0.2174     # 10.0 / 46.0
+
+  dublin:
+    disease_composition:
+      cancer: 0.4247          # 31.0 / 73.0
+      cardiovascular: 0.3973  # 29.0 / 73.0
+      respiratory: 0.1781     # 13.0 / 73.0

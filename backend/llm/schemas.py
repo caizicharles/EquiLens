@@ -19,6 +19,8 @@ class MCQResponse(BaseModel):
     (``response_json_schema``) use this to guarantee valid responses.
     """
 
+    model_config = {"json_schema_extra": {"additionalProperties": False}}
+
     answer: Literal["A", "B", "C", "D"] = Field(
         description="The single best answer letter."
     )

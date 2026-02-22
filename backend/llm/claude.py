@@ -159,7 +159,10 @@ class ClaudeProvider(LLMProvider):
                     }
             else:
                 status = entry.result.type  # errored | expired | canceled
-                logger.warning("Non-success for %s: %s", cid, status)
+                error_info = ""
+                if hasattr(entry.result, "error") and entry.result.error:
+                    error_info = f" — {entry.result.error.type}: {entry.result.error.message}"
+                logger.warning("Non-success for %s: %s%s", cid, status, error_info)
                 result_map[cid] = {"response": None, "result_status": status}
 
         logger.info(

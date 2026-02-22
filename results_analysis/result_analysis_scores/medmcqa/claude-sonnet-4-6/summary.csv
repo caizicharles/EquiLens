@@ -1,0 +1,13 @@
+city,disease,n_samples,n_valid,n_invalid,accuracy,precision_macro,recall_macro,f1_macro
+london,aggregate,100,98,2,0.897959,0.898186,0.898052,0.897637
+london,cancer,54,53,1,0.981132,0.972222,0.983333,0.976673
+london,cardiovascular,22,21,1,0.952381,0.95,0.96875,0.955556
+london,dementia_neuro,24,24,0,0.666667,0.681548,0.661905,0.659615
+edinburgh,aggregate,100,100,0,0.94,0.937226,0.937877,0.936832
+edinburgh,cancer,52,52,0,0.961538,0.960606,0.958042,0.958652
+edinburgh,cardiovascular,26,26,0,0.961538,0.964286,0.95,0.952991
+edinburgh,respiratory,22,22,0,0.863636,0.877273,0.908333,0.889614
+dublin,aggregate,100,100,0,0.85,0.820206,0.835673,0.82585
+dublin,cancer,43,43,0,0.883721,0.880532,0.842437,0.85174
+dublin,cardiovascular,41,41,0,0.853659,0.851799,0.84916,0.836247
+dublin,respiratory,16,16,0,0.75,0.7125,0.803571,0.729167

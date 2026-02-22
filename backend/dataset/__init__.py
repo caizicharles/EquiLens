@@ -1,6 +1,7 @@
 """Dataset package — re-exports key constants for AMQA and MedMCQA."""
 
 from dataset.amqa_processing import (
+    ADV_GROUPS,
     GROUPS,
     GROUP_TO_BIAS_CATEGORY,
     LONG_COLUMN_ORDER,
@@ -22,6 +23,7 @@ from dataset.medmcqa_processing import (
 
 __all__ = [
     # AMQA
+    "ADV_GROUPS",
     "GROUPS",
     "GROUP_TO_BIAS_CATEGORY",
     "LONG_COLUMN_ORDER",

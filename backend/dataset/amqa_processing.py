@@ -28,9 +28,12 @@ OUTPUT_FILE_WIDE = OUTPUT_DIR / "amqa.parquet"
 OUTPUT_FILE_LONG = OUTPUT_DIR / "amqa_long.parquet"
 OUTPUT_FILE_LONG_INFERENCE = OUTPUT_DIR / "amqa_long_inference.parquet"
 
-GROUPS = ["white", "black", "high_income", "low_income", "male", "female"]
+GROUPS = ["baseline", "white", "black", "high_income", "low_income", "male", "female"]
+
+ADV_GROUPS = ["white", "black", "high_income", "low_income", "male", "female"]
 
 GROUP_TO_BIAS_CATEGORY: dict[str, str] = {
+    "baseline": "none",
     "white": "ethnicity",
     "black": "ethnicity",
     "high_income": "SES",
@@ -53,7 +56,7 @@ HF_CORE_COLUMNS = [
     "answer_idx",
 ]
 
-ADV_COLUMNS = [f"adv_question_{g}" for g in GROUPS]
+ADV_COLUMNS = [f"adv_question_{g}" for g in ADV_GROUPS]
 
 HF_TARGET_COLUMNS = HF_CORE_COLUMNS + ADV_COLUMNS
 
@@ -114,11 +117,15 @@ def preprocess_long(df_wide: pd.DataFrame) -> pd.DataFrame:
     """Melt wide DataFrame so each adv-question group becomes its own row.
 
     Adds:
-      - ``adv_group``      – e.g. "white", "low_income", "female"
-      - ``adv_question``   – the adversarial question text
-      - ``bias_category``  – "ethnicity", "SES", or "gender"
+      - ``adv_group``      – "baseline", "white", "black", etc.
+      - ``adv_question``   – the question text for that group
+      - ``bias_category``  – "none" (baseline), "ethnicity", "SES", or "gender"
+
+    The baseline row uses the ``original_question`` column as its
+    ``adv_question`` text, giving each ``question_id`` 7 rows total.
     """
-    df_long = df_wide.melt(
+    # ── Adversarial rows (melt the 6 adv columns) ────────────────────
+    df_adv = df_wide.melt(
         id_vars=ID_COLUMNS,
         value_vars=ADV_COLUMNS,
         var_name="adv_group",
@@ -126,10 +133,17 @@ def preprocess_long(df_wide: pd.DataFrame) -> pd.DataFrame:
     )
 
     # "adv_question_white" → "white"
-    df_long["adv_group"] = (
-        df_long["adv_group"].str.removeprefix("adv_question_")
+    df_adv["adv_group"] = (
+        df_adv["adv_group"].str.removeprefix("adv_question_")
     )
 
+    # ── Baseline rows (original unmodified question) ─────────────────
+    df_baseline = df_wide[ID_COLUMNS].copy()
+    df_baseline["adv_group"] = "baseline"
+    df_baseline["adv_question"] = df_wide["original_question"]
+
+    # ── Combine and annotate ─────────────────────────────────────────
+    df_long = pd.concat([df_baseline, df_adv], ignore_index=True)
     df_long["bias_category"] = df_long["adv_group"].map(GROUP_TO_BIAS_CATEGORY)
 
     df_long = (
@@ -211,67 +225,116 @@ def save_parquet(df: pd.DataFrame, path: Path) -> None:
 def create_inference_set(
     df: pd.DataFrame,
     num_samples: int,
-    stratify_column: str | None = None,
+    pair_column: str | None = None,
     seed: int = 0,
 ) -> pd.DataFrame:
     """Sample a representative subset of *df* for LLM inference.
+
+    When *pair_column* is provided the function performs **paired
+    counterfactual sampling**: it samples *num_samples* unique values of
+    *pair_column* (e.g. ``question_id``) and keeps **all** rows that
+    share each sampled value — the baseline row plus the 6 adversarial
+    variants.  This yields *N* counterfactual pairs per bias category
+    (gender, ethnicity, SES) together with their matched baselines.
+    Total output rows = ``num_samples × len(GROUPS)`` (i.e. ``N × 7``).
 
     Parameters
     ----------
     df : pd.DataFrame
         Full processed dataset (long-format for AMQA).
     num_samples : int
-        Target number of rows in the inference set.
-    stratify_column : str | None
-        If given, performs proportional stratified sampling so that the
-        distribution of this column in the sample mirrors the full data.
-        Falls back to random sampling when ``None``.
+        When *pair_column* is set, the number of unique question IDs to
+        sample — equivalently, the number of counterfactual pairs per
+        bias category, each with a matched baseline.
+        When *pair_column* is ``None``, the number of individual rows.
+    pair_column : str | None
+        Column whose unique values define counterfactual sets (e.g.
+        ``"question_id"``).  When ``None``, falls back to simple random
+        row-level sampling.
     seed : int
         Random seed for reproducibility.
 
     Returns
     -------
     pd.DataFrame
-        A sampled subset of *df* with at most *num_samples* rows.
-    """
-    if num_samples >= len(df):
-        logger.info(
-            "num_samples (%d) >= dataset size (%d) — using full dataset.",
-            num_samples, len(df),
-        )
-        return df.copy()
+        A sampled subset of *df*.
 
-    if stratify_column is not None:
-        if stratify_column not in df.columns:
+    Raises
+    ------
+    ValueError
+        If *pair_column* is not in the DataFrame, if any value of
+        *pair_column* has an incomplete set of ``adv_group`` variants,
+        or if *num_samples* exceeds the number of available complete
+        question sets.
+    """
+    if pair_column is not None:
+        # ── Paired counterfactual sampling ────────────────────────────
+        if pair_column not in df.columns:
             raise ValueError(
-                f"stratify_column '{stratify_column}' not found in data. "
+                f"pair_column '{pair_column}' not found in data. "
                 f"Available columns: {sorted(df.columns)}"
             )
-        logger.info(
-            "Stratified sampling: %d rows by '%s' (seed=%d).",
-            num_samples, stratify_column, seed,
+
+        expected_groups = set(GROUPS)
+        n_expected = len(expected_groups)
+
+        # Validate completeness: every pair_column value must have all groups
+        group_sets = df.groupby(pair_column)["adv_group"].apply(set)
+        incomplete = group_sets[group_sets != expected_groups]
+        if len(incomplete) > 0:
+            missing_details = {
+                pid: sorted(expected_groups - grps)
+                for pid, grps in incomplete.items()
+            }
+            # Show at most 10 examples in the error message
+            shown = dict(list(missing_details.items())[:10])
+            raise ValueError(
+                f"{len(incomplete)} value(s) of '{pair_column}' have "
+                f"incomplete adv_group sets (expected {sorted(expected_groups)}). "
+                f"Examples: {shown}"
+            )
+
+        unique_ids = group_sets.index  # all complete
+        n_available = len(unique_ids)
+
+        if num_samples >= n_available:
+            if num_samples > n_available:
+                raise ValueError(
+                    f"num_samples ({num_samples}) exceeds the number of "
+                    f"available complete question sets ({n_available})."
+                )
+            logger.info(
+                "num_samples (%d) == available question sets (%d) "
+                "— using full dataset.",
+                num_samples, n_available,
+            )
+            return df.copy()
+
+        sampled_ids = (
+            pd.Series(unique_ids)
+            .sample(n=num_samples, random_state=seed)
+            .values
         )
-        # Proportional allocation per stratum
-        group_counts = df[stratify_column].value_counts(normalize=True)
-        frames: list[pd.DataFrame] = []
-        remaining = num_samples
-        groups = list(group_counts.index)
+        result = (
+            df[df[pair_column].isin(sampled_ids)]
+            .sort_values([pair_column, "adv_group"])
+            .reset_index(drop=True)
+        )
 
-        for i, group in enumerate(groups):
-            group_df = df[df[stratify_column] == group]
-            if i < len(groups) - 1:
-                n = max(1, round(group_counts[group] * num_samples))
-                n = min(n, len(group_df), remaining)
-            else:
-                # Last group gets whatever is left to hit exact total
-                n = min(remaining, len(group_df))
-            frames.append(group_df.sample(n=n, random_state=seed))
-            remaining -= n
-            if remaining <= 0:
-                break
-
-        result = pd.concat(frames, ignore_index=True)
+        logger.info(
+            "Paired sampling: %d question sets × %d groups = %d rows "
+            "(pair_column='%s', seed=%d).",
+            num_samples, n_expected, len(result), pair_column, seed,
+        )
     else:
+        # ── Simple random row-level sampling ─────────────────────────
+        if num_samples >= len(df):
+            logger.info(
+                "num_samples (%d) >= dataset size (%d) — using full dataset.",
+                num_samples, len(df),
+            )
+            return df.copy()
+
         logger.info(
             "Random sampling: %d rows (seed=%d).", num_samples, seed,
         )
@@ -367,23 +430,30 @@ def main() -> None:
                 f"Error: 'num_samples' not found in {args.config}."
             )
 
-        stratify_column = cfg.get("stratify_column")
+        pair_column = cfg.get("pair_column")
         seed = cfg.get("seed", 0)
 
         df_inference = create_inference_set(
             df_long,
             num_samples=int(num_samples),
-            stratify_column=stratify_column,
+            pair_column=pair_column,
             seed=int(seed),
         )
 
         inference_path = out_dir / OUTPUT_FILE_LONG_INFERENCE.name
         save_parquet(df_inference, inference_path)
-        logger.info(
-            "Inference set: %d rows (num_samples=%d, stratify=%s, seed=%d).",
-            len(df_inference), int(num_samples),
-            stratify_column or "none", int(seed),
-        )
+        if pair_column:
+            logger.info(
+                "Inference set: %d question sets × %d groups = %d rows "
+                "(pair_column=%s, seed=%d).",
+                int(num_samples), len(GROUPS), len(df_inference),
+                pair_column, int(seed),
+            )
+        else:
+            logger.info(
+                "Inference set: %d rows (num_samples=%d, seed=%d).",
+                len(df_inference), int(num_samples), int(seed),
+            )
         return
 
     # ── Step 1: Wide format ──────────────────────────────────────────────

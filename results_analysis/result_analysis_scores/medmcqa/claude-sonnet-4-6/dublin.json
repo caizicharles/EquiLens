@@ -1,0 +1,45 @@
+{
+  "dataset": "medmcqa",
+  "model": "claude-sonnet-4-6",
+  "city": "dublin",
+  "n_samples": 100,
+  "metrics": {
+    "aggregate": {
+      "accuracy": 0.85,
+      "precision_macro": 0.820206,
+      "recall_macro": 0.835673,
+      "f1_macro": 0.82585,
+      "n_valid": 100,
+      "n_invalid": 0
+    },
+    "per_disease": {
+      "cancer": {
+        "accuracy": 0.883721,
+        "precision_macro": 0.880532,
+        "recall_macro": 0.842437,
+        "f1_macro": 0.85174,
+        "composition": 0.4247,
+        "n_samples": 43,
+        "n_valid": 43
+      },
+      "cardiovascular": {
+        "accuracy": 0.853659,
+        "precision_macro": 0.851799,
+        "recall_macro": 0.84916,
+        "f1_macro": 0.836247,
+        "composition": 0.3973,
+        "n_samples": 41,
+        "n_valid": 41
+      },
+      "respiratory": {
+        "accuracy": 0.75,
+        "precision_macro": 0.7125,
+        "recall_macro": 0.803571,
+        "f1_macro": 0.729167,
+        "composition": 0.1781,
+        "n_samples": 16,
+        "n_valid": 16
+      }
+    }
+  }
+}

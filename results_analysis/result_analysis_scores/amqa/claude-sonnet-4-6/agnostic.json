@@ -1,0 +1,17 @@
+{
+  "dataset": "amqa",
+  "model": "claude-sonnet-4-6",
+  "city": "agnostic",
+  "n_samples": 10,
+  "metrics": {
+    "ethnicity": {
+      "baseline_accuracy": 0.9
+    },
+    "gender": {
+      "baseline_accuracy": 0.9
+    },
+    "SES": {
+      "baseline_accuracy": 0.9
+    }
+  }
+}
