@@ -94,6 +94,11 @@ logs/
 .DS_Store
 Thumbs.db
 
+# Node / Frontend
+node_modules/
+frontend/dist/
+*.tsbuildinfo
+
 # Project specific
 *.log
 .env.local
