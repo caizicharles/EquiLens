@@ -221,7 +221,7 @@ export const GREAT_BRITAIN: [number, number][] = [
 
 export const IRELAND: [number, number][] = [
   // Start at southeast — Carnsore Point, go clockwise (south coast first)
-  [52.17, -6.35],
+  [52.10, -6.40],
   // Wexford / Waterford coast
   [52.13, -6.68],
   [52.07, -6.95],
@@ -307,24 +307,29 @@ export const IRELAND: [number, number][] = [
   [54.48, -5.45],
   [54.35, -5.48],
   [54.22, -5.55],
-  // Down coast / Carlingford Lough
+  // Down coast — Mourne area (NI)
   [54.05, -5.75],
-  [54.00, -6.05],
-  // East coast — smoother than west
-  [53.85, -6.18],
-  [53.72, -6.12],
-  [53.58, -6.08],
-  // Dublin Bay
-  [53.40, -6.05],
-  [53.30, -6.05],
-  [53.20, -6.02],
+  // Carlingford Lough — smoother transition westward
+  [54.00, -5.95],
+  // Cooley Peninsula — curves eastward before Dundalk Bay
+  [53.95, -5.98],
+  // East coast — Dundalk Bay to Drogheda
+  [53.85, -6.08],
+  [53.72, -6.10],
+  [53.58, -6.07],
+  // Dublin Bay — with indent (Howth Head → bay → Dalkey)
+  [53.40, -6.02],
+  [53.35, -6.10],
+  [53.28, -6.04],
+  // Bray / north Wicklow
+  [53.18, -6.00],
   // Wicklow coast
-  [53.00, -5.98],
+  [53.00, -5.97],
   [52.80, -6.00],
   [52.60, -6.10],
-  [52.40, -6.18],
-  // Back to start
-  [52.17, -6.35],
+  [52.35, -6.28],
+  // Back to start — Carnsore Point
+  [52.10, -6.40],
 ];
 
 export const ISLE_OF_MAN: [number, number][] = [

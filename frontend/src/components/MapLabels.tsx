@@ -123,96 +123,98 @@ function CityMarker({ city, width, height }: { city: CityData; width: number; he
   };
 
   const isLeft = city.labelSide === 'left';
+  const labelGap = 10;
 
   return (
-    <div
+    <motion.div
+      onClick={handleClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      whileTap={{ scale: 1.15 }}
       style={{
         position: 'absolute',
         left: pos.x,
         top: pos.y,
-        transform: 'translate(-50%, -50%)',
         zIndex: 10,
+        cursor: 'pointer',
+        userSelect: 'none',
       }}
     >
-      <motion.div
-        onClick={handleClick}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        whileTap={{ scale: 1.15 }}
+      {/* Dot — centered exactly on the geographic coordinate */}
+      <div
         style={{
-          display: 'flex',
-          flexDirection: isLeft ? 'row-reverse' : 'row',
-          alignItems: 'center',
-          gap: 10,
-          cursor: 'pointer',
-          userSelect: 'none',
+          position: 'absolute',
+          left: -dotSize / 2,
+          top: -dotSize / 2,
+          width: dotSize,
+          height: dotSize,
+          flexShrink: 0,
+          transition: 'width 0.2s ease, height 0.2s ease',
         }}
       >
-        {/* Dot with pulse ring */}
+        {/* Pulse ring */}
         <div
           style={{
-            position: 'relative',
+            position: 'absolute',
+            inset: -4,
+            borderRadius: '50%',
+            border: `2px solid ${city.dotColor}`,
+            animation: 'city-pulse 2s ease-out infinite',
+          }}
+        />
+        {/* Dot */}
+        <div
+          style={{
             width: dotSize,
             height: dotSize,
-            flexShrink: 0,
-            transition: 'width 0.2s ease, height 0.2s ease',
+            borderRadius: '50%',
+            background: city.dotColor,
+            border: '3px solid rgba(255,255,255,0.95)',
+            boxShadow: hovered ? city.glowShadowHover : city.glowShadow,
+            transition: 'all 0.2s ease',
+          }}
+        />
+      </div>
+
+      {/* Label — grows outward from the dot */}
+      <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          transform: 'translateY(-50%)',
+          ...(isLeft
+            ? { right: dotSize / 2 + labelGap, textAlign: 'right' as const }
+            : { left: dotSize / 2 + labelGap, textAlign: 'left' as const }),
+        }}
+      >
+        <div
+          style={{
+            fontFamily: typography.body,
+            fontWeight: 800,
+            fontSize: 16,
+            color: hovered ? city.dotColor : colors.ink,
+            textShadow: TEXT_SHADOW_STRONG,
+            transition: 'color 0.2s ease',
+            lineHeight: 1.2,
+            whiteSpace: 'nowrap',
           }}
         >
-          {/* Pulse ring */}
-          <div
-            style={{
-              position: 'absolute',
-              inset: -4,
-              borderRadius: '50%',
-              border: `2px solid ${city.dotColor}`,
-              animation: 'city-pulse 2s ease-out infinite',
-            }}
-          />
-          {/* Dot */}
-          <div
-            style={{
-              width: dotSize,
-              height: dotSize,
-              borderRadius: '50%',
-              background: city.dotColor,
-              border: '3px solid rgba(255,255,255,0.95)',
-              boxShadow: hovered ? city.glowShadowHover : city.glowShadow,
-              transition: 'all 0.2s ease',
-            }}
-          />
+          {city.label}
         </div>
-
-        {/* Label */}
-        <div style={{ textAlign: isLeft ? 'right' : 'left' }}>
-          <div
-            style={{
-              fontFamily: typography.body,
-              fontWeight: 800,
-              fontSize: 16,
-              color: hovered ? city.dotColor : colors.ink,
-              textShadow: TEXT_SHADOW_STRONG,
-              transition: 'color 0.2s ease',
-              lineHeight: 1.2,
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {city.label}
-          </div>
-          <div
-            style={{
-              fontFamily: typography.mono,
-              fontSize: 10,
-              color: colors.inkMuted,
-              textShadow: TEXT_SHADOW_LIGHT,
-              lineHeight: 1.3,
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {city.coord}
-          </div>
+        <div
+          style={{
+            fontFamily: typography.mono,
+            fontSize: 10,
+            color: colors.inkMuted,
+            textShadow: TEXT_SHADOW_LIGHT,
+            lineHeight: 1.3,
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {city.coord}
         </div>
-      </motion.div>
-    </div>
+      </div>
+    </motion.div>
   );
 }
 
@@ -303,26 +305,30 @@ export default function MapLabels({ width, height }: MapLabelsProps) {
               position: 'absolute',
               left: pos.x,
               top: pos.y,
-              transform: 'translate(-50%, -50%)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 4,
               userSelect: 'none',
               zIndex: 3,
             }}
           >
+            {/* Dot — centered on geographic coordinate */}
             <div
               style={{
+                position: 'absolute',
+                left: -2.5,
+                top: -2.5,
                 width: 5,
                 height: 5,
                 borderRadius: '50%',
                 background: colors.inkLight,
                 opacity: 0.5,
-                flexShrink: 0,
               }}
             />
+            {/* Label — grows to the right */}
             <span
               style={{
+                position: 'absolute',
+                left: 7,
+                top: 0,
+                transform: 'translateY(-50%)',
                 fontFamily: typography.body,
                 fontWeight: 400,
                 fontSize: 11,
@@ -347,18 +353,31 @@ export default function MapLabels({ width, height }: MapLabelsProps) {
               position: 'absolute',
               left: pos.x,
               top: pos.y,
-              transform: 'translate(-50%, -50%)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 3,
               opacity: 0.5,
               userSelect: 'none',
               zIndex: 3,
             }}
           >
-            <span style={{ fontSize: 8, color: colors.inkLight, textShadow: TEXT_SHADOW_LIGHT }}>&#9650;</span>
+            {/* Triangle — centered on geographic coordinate */}
             <span
               style={{
+                position: 'absolute',
+                left: -4,
+                top: -4,
+                fontSize: 8,
+                color: colors.inkLight,
+                textShadow: TEXT_SHADOW_LIGHT,
+              }}
+            >
+              &#9650;
+            </span>
+            {/* Label — grows to the right */}
+            <span
+              style={{
+                position: 'absolute',
+                left: 7,
+                top: 0,
+                transform: 'translateY(-50%)',
                 fontFamily: typography.mono,
                 fontSize: 9,
                 color: colors.inkLight,
