@@ -292,10 +292,11 @@ export default function SandboxPanel({ resultsMode = false }: SandboxPanelProps)
         ...components.card,
         width: '100%',
         maxWidth: 400,
-        padding: `${spacing.md}px ${spacing.lg}px`,
+        height: '100%',
+        padding: spacing.lg,
         display: 'flex',
         flexDirection: 'column',
-        gap: spacing.sm,
+        gap: spacing.md,
       }}
     >
       {/* Header */}
@@ -407,8 +408,8 @@ export default function SandboxPanel({ resultsMode = false }: SandboxPanelProps)
         />
       </div>
 
-      {/* Divider */}
-      <div style={{ height: 1, background: colors.borderLight }} />
+      {/* Spacer — pushes button to bottom */}
+      <div style={{ flex: 1 }} />
 
       {/* Run Attack button */}
       <motion.button

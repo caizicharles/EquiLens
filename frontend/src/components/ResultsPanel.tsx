@@ -9,7 +9,7 @@ import { colors, typography, components, spacing, radii } from '../style';
 
 type Tab = 'city' | 'compare';
 
-const LOADING_DURATION = 2000; // ms total
+const LOADING_DURATION = 4000; // ms total
 
 const LOADING_STEPS = [
   { at: 0, label: (model: string) => `Testing ${model}...` },
