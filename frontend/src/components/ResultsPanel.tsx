@@ -10,12 +10,14 @@ import { colors, typography, components, spacing, radii } from '../style';
 
 type Tab = 'city' | 'compare';
 
-const LOADING_DURATION = 4000;
+const LOADING_DURATION = 6500;
 
 const LOADING_STEPS = [
-  { at: 0, label: (model: string) => `Testing ${model}...` },
-  { at: 0.4, label: () => 'Gathering results...' },
-  { at: 0.75, label: () => 'Synthesizing findings...' },
+  { at: 0,    label: () => 'Initialising pipeline...' },
+  { at: 0.06, label: () => 'Loading dataset...' },
+  { at: 0.14, label: (model: string) => `Testing ${model}...` },
+  { at: 0.68, label: () => 'Gathering results...' },
+  { at: 0.86, label: () => 'Computing metrics...' },
 ];
 
 // ---------------------------------------------------------------------------
