@@ -22,7 +22,7 @@ export default function CompareAllTab() {
               color: colors.ink,
             }}
           >
-            Cross-City Bias Comparison (AMQA)
+            Cross-City Bias Comparison
           </span>
           <span
             style={{
@@ -61,7 +61,7 @@ export default function CompareAllTab() {
               color: colors.ink,
             }}
           >
-            Cross-City Disease Performance (MedMCQA)
+            Cross-City Disease Performance
           </span>
           <span
             style={{

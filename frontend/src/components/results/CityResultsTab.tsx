@@ -79,7 +79,7 @@ export default function CityResultsTab({ city, enabledAxes, enabledDisease }: Pr
           style={{ display: 'flex', flexDirection: 'column', gap: spacing.lg }}
         >
           <SectionHeader
-            title="Adversarial Bias Detection (AMQA)"
+            title="Adversarial Bias Detection"
             subtitle="N=10 questions, seed=42"
           />
 
@@ -141,7 +141,7 @@ export default function CityResultsTab({ city, enabledAxes, enabledDisease }: Pr
           style={{ display: 'flex', flexDirection: 'column', gap: spacing.lg }}
         >
           <SectionHeader
-            title="Disease-Specific Performance (MedMCQA)"
+            title="Disease-Specific Performance"
             subtitle="N=100 questions per city"
             delay={0.15}
           />

@@ -11,7 +11,7 @@ import { colors, typography, components, spacing, shadows } from '../style';
 
 function StackedBar({
   segments,
-  height = 28,
+  height = 24,
   disabled = false,
 }: {
   segments: { label: string; pct: number; color: string }[];
@@ -292,12 +292,10 @@ export default function SandboxPanel({ resultsMode = false }: SandboxPanelProps)
         ...components.card,
         width: '100%',
         maxWidth: 400,
-        maxHeight: 'calc(100vh - 64px)',
-        overflowY: 'auto',
-        padding: spacing.lg,
+        padding: `${spacing.md}px ${spacing.lg}px`,
         display: 'flex',
         flexDirection: 'column',
-        gap: spacing.lg,
+        gap: spacing.sm,
       }}
     >
       {/* Header */}
@@ -305,13 +303,13 @@ export default function SandboxPanel({ resultsMode = false }: SandboxPanelProps)
         <h2
           style={{
             fontFamily: typography.display,
-            fontSize: 22,
+            fontSize: 20,
             fontWeight: 700,
             color: colors.green500,
             margin: 0,
           }}
         >
-          Sandbox
+          Sandbox Configurations
         </h2>
         {!resultsMode && (
           <button
@@ -370,9 +368,9 @@ export default function SandboxPanel({ resultsMode = false }: SandboxPanelProps)
             margin: 0,
           }}
         >
-          Demographics (AMQA)
+          Demographics
         </h3>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: spacing.md }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: spacing.sm }}>
           {city.demographics.map((axis) => (
             <DemographicRow
               key={axis.key}
@@ -400,7 +398,7 @@ export default function SandboxPanel({ resultsMode = false }: SandboxPanelProps)
             margin: 0,
           }}
         >
-          Disease Prevalence (MedMCQA)
+          Disease Prevalence
         </h3>
         <DiseaseRow
           diseases={city.diseases}
@@ -422,7 +420,7 @@ export default function SandboxPanel({ resultsMode = false }: SandboxPanelProps)
           fontFamily: typography.body,
           fontSize: 15,
           fontWeight: 600,
-          padding: '12px 24px',
+          padding: '10px 20px',
           borderRadius: 10,
           border: 'none',
           background: resultsMode
@@ -474,7 +472,7 @@ export default function SandboxPanel({ resultsMode = false }: SandboxPanelProps)
             fontFamily: typography.body,
             fontWeight: 500,
             fontSize: 13,
-            padding: '8px 20px',
+            padding: '7px 16px',
             borderRadius: 8,
             border: `1px solid ${colors.border}`,
             background: 'transparent',

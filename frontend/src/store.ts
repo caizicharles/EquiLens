@@ -25,10 +25,11 @@ export interface AppStore {
   toggleBiasAxis: (axis: BiasAxisKey) => void;
   toggleDisease: () => void;
   runAttack: () => void;
+  finishAttack: () => void;
   resetSandbox: () => void;
 }
 
-export const useAppStore = create<AppStore>((set, get) => ({
+export const useAppStore = create<AppStore>((set) => ({
   // Phase navigation
   phase: 'map',
   selectedCity: null,
@@ -54,17 +55,12 @@ export const useAppStore = create<AppStore>((set, get) => ({
   toggleDisease: () => set((s) => ({ enabledDisease: !s.enabledDisease })),
 
   runAttack: () => {
-    set({ attackRunning: true, attackComplete: false });
-    // Simulate loading — then transition to results
-    setTimeout(() => {
-      const { phase } = get();
-      // Only proceed if still in sandbox (user didn't navigate away)
-      if (phase === 'sandbox') {
-        set({ attackRunning: false, attackComplete: true, phase: 'results' });
-      } else {
-        set({ attackRunning: false });
-      }
-    }, 2000);
+    // Transition to results immediately — the loading animation lives in ResultsPanel
+    set({ attackRunning: true, attackComplete: false, phase: 'results' });
+  },
+
+  finishAttack: () => {
+    set({ attackRunning: false, attackComplete: true });
   },
 
   resetSandbox: () =>
