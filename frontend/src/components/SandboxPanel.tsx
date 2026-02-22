@@ -11,7 +11,7 @@ import { colors, typography, components, spacing, shadows } from '../style';
 
 function StackedBar({
   segments,
-  height = 24,
+  height = 28,
   disabled = false,
 }: {
   segments: { label: string; pct: number; color: string }[];
@@ -24,7 +24,7 @@ function StackedBar({
         display: 'flex',
         width: '100%',
         height,
-        borderRadius: 6,
+        borderRadius: 100,
         overflow: 'hidden',
         opacity: disabled ? 0.35 : 1,
         transition: 'opacity 0.2s ease',
@@ -36,26 +36,72 @@ function StackedBar({
           style={{
             width: `${seg.pct * 100}%`,
             background: seg.color,
-            display: 'flex',
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Bar legend (below stacked bar)
+// ---------------------------------------------------------------------------
+
+function BarLegend({
+  segments,
+  disabled = false,
+}: {
+  segments: { label: string; pct: number; color: string }[];
+  disabled?: boolean;
+}) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: spacing.sm,
+        marginTop: spacing.xs,
+        opacity: disabled ? 0.35 : 1,
+        transition: 'opacity 0.2s ease',
+      }}
+    >
+      {segments.map((seg) => (
+        <div
+          key={seg.label}
+          style={{
+            display: 'inline-flex',
             alignItems: 'center',
-            justifyContent: 'center',
-            minWidth: seg.pct > 0.08 ? 0 : undefined,
+            gap: 4,
           }}
         >
-          {seg.pct >= 0.12 && (
-            <span
-              style={{
-                fontFamily: typography.mono,
-                fontSize: 10,
-                fontWeight: 500,
-                color: colors.ink,
-                opacity: 0.8,
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {seg.label} {Math.round(seg.pct * 100)}%
-            </span>
-          )}
+          <div
+            style={{
+              width: 10,
+              height: 10,
+              borderRadius: 2,
+              background: seg.color,
+              flexShrink: 0,
+            }}
+          />
+          <span
+            style={{
+              fontFamily: typography.body,
+              fontSize: 11,
+              color: colors.inkMuted,
+            }}
+          >
+            {seg.label}
+          </span>
+          <span
+            style={{
+              fontFamily: typography.mono,
+              fontSize: 11,
+              fontWeight: 500,
+              color: colors.ink,
+            }}
+          >
+            {Math.round(seg.pct * 100)}%
+          </span>
         </div>
       ))}
     </div>
@@ -140,29 +186,30 @@ function DemographicsSection({
           Demographics
         </span>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: spacing.xs }}>
-        {demographics.map((axis) => (
-          <div key={axis.key} style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <span
-              style={{
-                fontFamily: typography.body,
-                fontSize: 11,
-                fontWeight: 500,
-                color: enabled ? colors.inkMuted : colors.inkLight,
-                transition: 'color 0.2s ease',
-              }}
-            >
-              {axis.label}
-            </span>
-            <StackedBar
-              disabled={!enabled}
-              segments={[
-                { label: axis.majorityLabel, pct: axis.majorityPct, color: axis.majorityColor },
-                { label: axis.minorityLabel, pct: axis.minorityPct, color: axis.minorityColor },
-              ]}
-            />
-          </div>
-        ))}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: spacing.sm }}>
+        {demographics.map((axis) => {
+          const segs = [
+            { label: axis.majorityLabel, pct: axis.majorityPct, color: axis.majorityColor },
+            { label: axis.minorityLabel, pct: axis.minorityPct, color: axis.minorityColor },
+          ];
+          return (
+            <div key={axis.key} style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <span
+                style={{
+                  fontFamily: typography.body,
+                  fontSize: 11,
+                  fontWeight: 500,
+                  color: enabled ? colors.inkMuted : colors.inkLight,
+                  transition: 'color 0.2s ease',
+                }}
+              >
+                {axis.label}
+              </span>
+              <StackedBar disabled={!enabled} segments={segs} />
+              <BarLegend disabled={!enabled} segments={segs} />
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -199,14 +246,19 @@ function DiseaseSection({
           Disease Composition
         </span>
       </div>
-      <StackedBar
-        disabled={!enabled}
-        segments={diseases.map((d) => ({
+      {(() => {
+        const segs = diseases.map((d) => ({
           label: d.label,
           pct: d.pct,
           color: d.color,
-        }))}
-      />
+        }));
+        return (
+          <>
+            <StackedBar disabled={!enabled} segments={segs} />
+            <BarLegend disabled={!enabled} segments={segs} />
+          </>
+        );
+      })()}
     </div>
   );
 }
