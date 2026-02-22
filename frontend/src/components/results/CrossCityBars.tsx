@@ -22,9 +22,10 @@ const CITY_COLORS: Record<string, string> = {
 interface Props {
   metric: 'accuracy_ratio' | 'consistency_ratio';
   title: string;
+  compact?: boolean;
 }
 
-export default function CrossCityBars({ metric, title }: Props) {
+export default function CrossCityBars({ metric, title, compact = false }: Props) {
   const axes: BiasAxisKey[] = ['ethnicity', 'gender', 'SES'];
 
   const chartData = axes.map((axis) => {
@@ -37,76 +38,81 @@ export default function CrossCityBars({ metric, title }: Props) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      style={{ display: 'flex', flexDirection: 'column', gap: 4 }}
+      transition={{ duration: 0.3 }}
+      style={{ display: 'flex', flexDirection: 'column', gap: 2, height: '100%' }}
     >
       <span
         style={{
           fontFamily: typography.body,
-          fontSize: 12,
+          fontSize: compact ? 10 : 12,
           fontWeight: 600,
           color: colors.ink,
         }}
       >
         {title}
       </span>
-      <ResponsiveContainer width="100%" height={180}>
-        <BarChart
-          data={chartData}
-          margin={{ top: 12, right: 8, bottom: 4, left: 8 }}
-        >
-          <XAxis
-            dataKey="axis"
-            tick={{
-              fontFamily: typography.body,
-              fontSize: 11,
-              fill: colors.inkMuted,
-            }}
-            axisLine={false}
-            tickLine={false}
-          />
-          <YAxis
-            domain={metric === 'accuracy_ratio' ? [0.8, 1.2] : [0.5, 1.5]}
-            tick={{
-              fontFamily: typography.mono,
-              fontSize: 10,
-              fill: colors.inkLight,
-            }}
-            axisLine={false}
-            tickLine={false}
-            width={36}
-          />
-          <ReferenceLine
-            y={1.0}
-            stroke={colors.inkLight}
-            strokeDasharray="4 3"
-            strokeWidth={1}
-          />
-          <Legend
-            formatter={(value: string) => CITY_LABELS[value as keyof typeof CITY_LABELS]}
-            wrapperStyle={{
-              fontFamily: typography.body,
-              fontSize: 11,
-            }}
-          />
-          {ALL_CITIES.map((city) => (
-            <Bar key={city} dataKey={city} fill={CITY_COLORS[city]} radius={[3, 3, 0, 0]} barSize={18}>
-              <LabelList
-                dataKey={city}
-                position="top"
-                formatter={(v) => Number(v).toFixed(2)}
-                style={{
-                  fontFamily: typography.mono,
-                  fontSize: 9,
-                  fill: colors.ink,
-                }}
-              />
-            </Bar>
-          ))}
-        </BarChart>
-      </ResponsiveContainer>
+      <div style={{ flex: 1, minHeight: 0 }}>
+        <ResponsiveContainer width="100%" height={compact ? '100%' : 180}>
+          <BarChart
+            data={chartData}
+            margin={compact
+              ? { top: 8, right: 4, bottom: 2, left: 4 }
+              : { top: 12, right: 8, bottom: 4, left: 8 }
+            }
+          >
+            <XAxis
+              dataKey="axis"
+              tick={{
+                fontFamily: typography.body,
+                fontSize: compact ? 9 : 11,
+                fill: colors.inkMuted,
+              }}
+              axisLine={false}
+              tickLine={false}
+            />
+            <YAxis
+              domain={metric === 'accuracy_ratio' ? [0.8, 1.2] : [0.5, 1.5]}
+              tick={{
+                fontFamily: typography.mono,
+                fontSize: compact ? 8 : 10,
+                fill: colors.inkLight,
+              }}
+              axisLine={false}
+              tickLine={false}
+              width={compact ? 28 : 36}
+            />
+            <ReferenceLine
+              y={1.0}
+              stroke={colors.inkLight}
+              strokeDasharray="4 3"
+              strokeWidth={1}
+            />
+            <Legend
+              formatter={(value: string) => CITY_LABELS[value as keyof typeof CITY_LABELS]}
+              wrapperStyle={{
+                fontFamily: typography.body,
+                fontSize: compact ? 9 : 11,
+              }}
+            />
+            {ALL_CITIES.map((city) => (
+              <Bar key={city} dataKey={city} fill={CITY_COLORS[city]} radius={[3, 3, 0, 0]} barSize={compact ? 12 : 18}>
+                <LabelList
+                  dataKey={city}
+                  position="top"
+                  formatter={(v) => Number(v).toFixed(2)}
+                  style={{
+                    fontFamily: typography.mono,
+                    fontSize: compact ? 7 : 9,
+                    fill: colors.ink,
+                  }}
+                />
+              </Bar>
+            ))}
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
     </motion.div>
   );
 }

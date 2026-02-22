@@ -31,7 +31,6 @@ function buildRows(): RowDef[] {
     },
   ];
 
-  // Gather all unique disease names across cities
   const diseaseSet = new Set<string>();
   for (const city of ALL_CITIES) {
     for (const d of Object.keys(MEDMCQA_RESULTS[city].diseases)) {
@@ -41,7 +40,7 @@ function buildRows(): RowDef[] {
 
   for (const disease of diseaseSet) {
     rows.push({
-      label: `${disease} Accuracy`,
+      label: `${disease} Acc.`,
       bold: false,
       getter: (c) => {
         const d = MEDMCQA_RESULTS[c as keyof typeof MEDMCQA_RESULTS].diseases[disease];
@@ -63,25 +62,31 @@ function cellBg(val: number, rowVals: number[]): string {
   return 'transparent';
 }
 
-const thStyle: React.CSSProperties = {
-  fontFamily: typography.body,
-  fontSize: 10,
-  fontWeight: 600,
-  textTransform: 'uppercase',
-  letterSpacing: '0.03em',
-  padding: '8px 10px',
-  textAlign: 'right',
-  background: colors.surfaceAlt,
-};
+interface Props {
+  compact?: boolean;
+}
 
-export default function CrossCityTable() {
+export default function CrossCityTable({ compact = false }: Props) {
   const rows = buildRows();
+  const fs = compact ? 10 : 12;
+  const pad = compact ? '4px 6px' : '7px 10px';
+
+  const thStyle: React.CSSProperties = {
+    fontFamily: typography.body,
+    fontSize: compact ? 8 : 10,
+    fontWeight: 600,
+    textTransform: 'uppercase',
+    letterSpacing: '0.03em',
+    padding: compact ? '4px 6px' : '8px 10px',
+    textAlign: 'right',
+    background: colors.surfaceAlt,
+  };
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35 }}
+      transition={{ duration: 0.3 }}
       style={{ borderRadius: radii.md, overflow: 'hidden' }}
     >
       <table
@@ -89,29 +94,16 @@ export default function CrossCityTable() {
           width: '100%',
           borderCollapse: 'collapse',
           fontFamily: typography.body,
-          fontSize: 12,
+          fontSize: fs,
         }}
       >
         <thead>
           <tr>
-            <th
-              style={{
-                ...thStyle,
-                textAlign: 'left',
-                color: colors.inkMuted,
-                minWidth: 120,
-              }}
-            >
+            <th style={{ ...thStyle, textAlign: 'left', color: colors.inkMuted, minWidth: compact ? 80 : 120 }}>
               Metric
             </th>
             {ALL_CITIES.map((city) => (
-              <th
-                key={city}
-                style={{
-                  ...thStyle,
-                  color: CITY_HEADER_COLORS[city],
-                }}
-              >
+              <th key={city} style={{ ...thStyle, color: CITY_HEADER_COLORS[city] }}>
                 {CITY_LABELS[city]}
               </th>
             ))}
@@ -134,9 +126,9 @@ export default function CrossCityTable() {
                   style={{
                     fontFamily: typography.body,
                     fontWeight: row.bold ? 600 : 400,
-                    fontSize: row.bold ? 12 : 11,
+                    fontSize: compact ? (row.bold ? 10 : 9) : (row.bold ? 12 : 11),
                     color: colors.ink,
-                    padding: '7px 10px',
+                    padding: pad,
                   }}
                 >
                   {row.label}
@@ -158,10 +150,10 @@ export default function CrossCityTable() {
                       key={city}
                       style={{
                         fontFamily: typography.mono,
-                        fontSize: row.bold ? 12 : 11,
+                        fontSize: compact ? (row.bold ? 10 : 9) : (row.bold ? 12 : 11),
                         fontWeight: row.bold ? 600 : 400,
                         textAlign: 'right',
-                        padding: '7px 10px',
+                        padding: pad,
                         color: row.isPct && isNum ? pctColor : colors.inkLight,
                         background: bg,
                       }}

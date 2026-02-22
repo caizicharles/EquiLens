@@ -4,6 +4,7 @@ import { colors, typography, radii, shadows, spacing } from '../../style';
 
 interface Props {
   aggregate: AggregateMetrics;
+  compact?: boolean;
 }
 
 function valueColor(pct: number): string {
@@ -19,13 +20,14 @@ const METRIC_ITEMS: { key: keyof AggregateMetrics; label: string }[] = [
   { key: 'f1_macro', label: 'F1 Score' },
 ];
 
-export default function AggregateCards({ aggregate }: Props) {
+export default function AggregateCards({ aggregate, compact = false }: Props) {
   return (
     <div
       style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(4, 1fr)',
-        gap: spacing.sm,
+        gridTemplateColumns: compact ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
+        gap: compact ? spacing.xs : spacing.sm,
+        height: compact ? '100%' : undefined,
       }}
     >
       {METRIC_ITEMS.map((item, i) => {
@@ -33,18 +35,19 @@ export default function AggregateCards({ aggregate }: Props) {
         return (
           <motion.div
             key={item.key}
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, delay: i * 0.05 }}
+            transition={{ duration: 0.25, delay: i * 0.03 }}
             style={{
               background: 'rgba(255, 255, 255, 0.6)',
               border: `1px solid ${colors.borderLight}`,
               borderRadius: radii.md,
-              padding: `${spacing.md}px ${spacing.sm}px`,
+              padding: compact ? `${spacing.xs}px ${spacing.xs}px` : `${spacing.md}px ${spacing.sm}px`,
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              gap: 4,
+              justifyContent: 'center',
+              gap: 2,
               boxShadow: shadows.subtle,
             }}
           >
@@ -52,7 +55,7 @@ export default function AggregateCards({ aggregate }: Props) {
               style={{
                 fontFamily: typography.body,
                 fontWeight: 500,
-                fontSize: 10,
+                fontSize: compact ? 8 : 10,
                 color: colors.inkMuted,
                 textTransform: 'uppercase',
                 letterSpacing: '0.03em',
@@ -64,7 +67,7 @@ export default function AggregateCards({ aggregate }: Props) {
               style={{
                 fontFamily: typography.mono,
                 fontWeight: 600,
-                fontSize: 22,
+                fontSize: compact ? 16 : 22,
                 color: valueColor(val),
                 lineHeight: 1,
               }}

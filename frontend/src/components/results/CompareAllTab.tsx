@@ -1,81 +1,42 @@
 import { motion } from 'framer-motion';
 import CrossCityBars from './CrossCityBars';
 import CrossCityTable from './CrossCityTable';
-import { colors, typography, spacing } from '../../style';
+import TextSummary from './TextSummary';
+import { spacing } from '../../style';
 
 export default function CompareAllTab() {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: spacing.xl }}>
-      {/* Section C: Cross-City Accuracy Comparison */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.4 }}
-        style={{ display: 'flex', flexDirection: 'column', gap: spacing.sm }}
-      >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <span
-            style={{
-              fontFamily: typography.body,
-              fontWeight: 600,
-              fontSize: 14,
-              color: colors.ink,
-            }}
-          >
-            Cross-City Bias Comparison
-          </span>
-          <span
-            style={{
-              fontFamily: typography.mono,
-              fontSize: 11,
-              color: colors.inkLight,
-            }}
-          >
-            All three cities, N=10 questions, seed=42
-          </span>
-        </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: spacing.sm, height: '100%' }}>
+      {/* Text Summary */}
+      <TextSummary isCompare />
 
-        <CrossCityBars metric="accuracy_ratio" title="Accuracy Ratio by City" />
+      {/* Charts section */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: spacing.sm, minHeight: 0 }}>
+        {/* Row 1: Accuracy bars (left) + Consistency bars (right) */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          style={{ display: 'flex', gap: spacing.sm, flex: 1, minHeight: 0 }}
+        >
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <CrossCityBars metric="accuracy_ratio" title="Accuracy Ratio by City" compact />
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <CrossCityBars metric="consistency_ratio" title="Consistency Ratio by City" compact />
+          </div>
+        </motion.div>
 
-        <div style={{ height: 1, background: colors.borderLight, margin: `${spacing.sm}px 0` }} />
-
-        <CrossCityBars metric="consistency_ratio" title="Consistency Ratio by City" />
-      </motion.div>
-
-      {/* Divider */}
-      <div style={{ height: 1, background: colors.borderLight }} />
-
-      {/* Section E: Cross-City Disease Performance */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.4, delay: 0.15 }}
-        style={{ display: 'flex', flexDirection: 'column', gap: spacing.sm }}
-      >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <span
-            style={{
-              fontFamily: typography.body,
-              fontWeight: 600,
-              fontSize: 14,
-              color: colors.ink,
-            }}
-          >
-            Cross-City Disease Performance
-          </span>
-          <span
-            style={{
-              fontFamily: typography.mono,
-              fontSize: 11,
-              color: colors.inkLight,
-            }}
-          >
-            N=100 questions per city
-          </span>
-        </div>
-
-        <CrossCityTable />
-      </motion.div>
+        {/* Row 2: Cross-City Disease Performance Table */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+          style={{ flex: '0 0 auto' }}
+        >
+          <CrossCityTable compact />
+        </motion.div>
+      </div>
     </div>
   );
 }

@@ -6,7 +6,7 @@ import AccuracyRatioChart from './AccuracyRatioChart';
 import ConsistencyGauge from './ConsistencyGauge';
 import AggregateCards from './AggregateCards';
 import DiseaseAccuracyChart from './DiseaseAccuracyChart';
-import DiseaseMetricsTable from './DiseaseMetricsTable';
+import TextSummary from './TextSummary';
 import { colors, typography, spacing } from '../../style';
 
 interface Props {
@@ -15,50 +15,10 @@ interface Props {
   enabledDisease: boolean;
 }
 
-function SectionHeader({
-  title,
-  subtitle,
-  delay = 0,
-}: {
-  title: string;
-  subtitle: string;
-  delay?: number;
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay }}
-      style={{ display: 'flex', flexDirection: 'column', gap: 2 }}
-    >
-      <span
-        style={{
-          fontFamily: typography.body,
-          fontWeight: 600,
-          fontSize: 14,
-          color: colors.ink,
-        }}
-      >
-        {title}
-      </span>
-      <span
-        style={{
-          fontFamily: typography.mono,
-          fontSize: 11,
-          color: colors.inkLight,
-        }}
-      >
-        {subtitle}
-      </span>
-    </motion.div>
-  );
-}
-
 export default function CityResultsTab({ city, enabledAxes, enabledDisease }: Props) {
   const amqa = AMQA_RESULTS[city];
   const medmcqa = MEDMCQA_RESULTS[city];
 
-  // Filter AMQA data to only enabled axes
   const filteredAMQA: Partial<Record<BiasAxisKey, AMQAMetrics>> = {};
   for (const [key, enabled] of Object.entries(enabledAxes)) {
     if (enabled) {
@@ -68,111 +28,67 @@ export default function CityResultsTab({ city, enabledAxes, enabledDisease }: Pr
 
   const hasAMQA = Object.keys(filteredAMQA).length > 0;
 
+  if (!hasAMQA && !enabledDisease) {
+    return (
+      <div
+        style={{
+          padding: spacing.xxl,
+          textAlign: 'center',
+          fontFamily: typography.body,
+          color: colors.inkLight,
+          fontSize: 14,
+        }}
+      >
+        No axes or disease toggles enabled. Go back to sandbox to configure.
+      </div>
+    );
+  }
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: spacing.xl }}>
-      {/* Section A: AMQA Bias Analysis */}
-      {hasAMQA && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.4 }}
-          style={{ display: 'flex', flexDirection: 'column', gap: spacing.lg }}
-        >
-          <SectionHeader
-            title="Adversarial Bias Detection"
-            subtitle="N=10 questions, seed=42"
-          />
+    <div style={{ display: 'flex', flexDirection: 'column', gap: spacing.sm, height: '100%' }}>
+      {/* Text Summary */}
+      <TextSummary city={city} />
 
-          {/* A1: Accuracy Ratio */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <span
-              style={{
-                fontFamily: typography.body,
-                fontSize: 11,
-                fontWeight: 500,
-                color: colors.inkMuted,
-                textTransform: 'uppercase',
-                letterSpacing: '0.04em',
-              }}
-            >
-              Accuracy Ratio
-            </span>
-            <AccuracyRatioChart data={filteredAMQA} />
-          </div>
+      {/* Charts section */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: spacing.sm, minHeight: 0 }}>
+        {/* Row 1: Accuracy Ratio (left) + Consistency Gauges (right) */}
+        {hasAMQA && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            style={{ display: 'flex', gap: spacing.sm, flex: '0 0 auto' }}
+          >
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <AccuracyRatioChart data={filteredAMQA} compact />
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <ConsistencyGauge data={filteredAMQA} compact />
+            </div>
+          </motion.div>
+        )}
 
-          {/* Divider */}
-          <div style={{ height: 1, background: colors.borderLight }} />
-
-          {/* A2: Consistency Ratio */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <span
-              style={{
-                fontFamily: typography.body,
-                fontSize: 11,
-                fontWeight: 500,
-                color: colors.inkMuted,
-                textTransform: 'uppercase',
-                letterSpacing: '0.04em',
-              }}
-            >
-              Consistency Ratio
-            </span>
-            <ConsistencyGauge data={filteredAMQA} />
-          </div>
-        </motion.div>
-      )}
-
-      {/* Divider between sections */}
-      {hasAMQA && enabledDisease && (
-        <div
-          style={{
-            height: 1,
-            background: colors.borderLight,
-          }}
-        />
-      )}
-
-      {/* Section B: MedMCQA Disease Performance */}
-      {enabledDisease && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.4, delay: 0.15 }}
-          style={{ display: 'flex', flexDirection: 'column', gap: spacing.lg }}
-        >
-          <SectionHeader
-            title="Disease-Specific Performance"
-            subtitle="N=100 questions per city"
-            delay={0.15}
-          />
-
-          {/* B1: Aggregate Metrics Cards */}
-          <AggregateCards aggregate={medmcqa.aggregate} />
-
-          {/* B2: Disease Accuracy Bars */}
-          <DiseaseAccuracyChart
-            diseases={medmcqa.diseases}
-            aggregate={medmcqa.aggregate}
-          />
-
-          {/* B3: Disease Metrics Table */}
-          <DiseaseMetricsTable diseases={medmcqa.diseases} />
-        </motion.div>
-      )}
-
-      {!hasAMQA && !enabledDisease && (
-        <div
-          style={{
-            padding: spacing.xxl,
-            textAlign: 'center',
-            fontFamily: typography.body,
-            color: colors.inkLight,
-            fontSize: 14,
-          }}
-        >
-          No axes or disease toggles enabled. Go back to sandbox to configure.
-        </div>
-      )}
+        {/* Row 2: Aggregate Cards 2x2 (left ~38%) + Disease Accuracy Bars (right ~62%) */}
+        {enabledDisease && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+            style={{ display: 'flex', gap: spacing.sm, flex: 1, minHeight: 0 }}
+          >
+            <div style={{ flex: '0 0 38%', minWidth: 0 }}>
+              <AggregateCards aggregate={medmcqa.aggregate} compact />
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <DiseaseAccuracyChart
+                diseases={medmcqa.diseases}
+                aggregate={medmcqa.aggregate}
+                compact
+              />
+            </div>
+          </motion.div>
+        )}
+      </div>
     </div>
   );
 }

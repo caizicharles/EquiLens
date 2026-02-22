@@ -15,9 +15,10 @@ import { colors, typography, chartColors } from '../../style';
 interface Props {
   diseases: Record<string, DiseaseMetrics>;
   aggregate: AggregateMetrics;
+  compact?: boolean;
 }
 
-export default function DiseaseAccuracyChart({ diseases, aggregate }: Props) {
+export default function DiseaseAccuracyChart({ diseases, aggregate, compact = false }: Props) {
   const diseaseColors = chartColors.secondary;
   const entries = Object.entries(diseases);
 
@@ -30,20 +31,24 @@ export default function DiseaseAccuracyChart({ diseases, aggregate }: Props) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
+      transition={{ duration: 0.3 }}
+      style={{ height: '100%' }}
     >
-      <ResponsiveContainer width="100%" height={200}>
+      <ResponsiveContainer width="100%" height={compact ? '100%' : 200}>
         <BarChart
           data={chartData}
-          margin={{ top: 20, right: 8, bottom: 4, left: 8 }}
+          margin={compact
+            ? { top: 14, right: 4, bottom: 2, left: 4 }
+            : { top: 20, right: 8, bottom: 4, left: 8 }
+          }
         >
           <XAxis
             dataKey="name"
             tick={{
               fontFamily: typography.body,
-              fontSize: 11,
+              fontSize: compact ? 9 : 11,
               fill: colors.inkMuted,
             }}
             axisLine={false}
@@ -51,33 +56,24 @@ export default function DiseaseAccuracyChart({ diseases, aggregate }: Props) {
           />
           <YAxis
             domain={[50, 100]}
-            ticks={[50, 60, 70, 80, 90, 100]}
+            ticks={[50, 70, 90, 100]}
             tick={{
               fontFamily: typography.mono,
-              fontSize: 10,
+              fontSize: compact ? 8 : 10,
               fill: colors.inkLight,
             }}
             tickFormatter={(v: number) => `${v}%`}
             axisLine={false}
             tickLine={false}
-            width={40}
+            width={compact ? 30 : 40}
           />
           <ReferenceLine
             y={+(aggregate.accuracy * 100).toFixed(1)}
             stroke={colors.inkLight}
             strokeDasharray="6 3"
             strokeWidth={1}
-            label={{
-              value: `Aggregate: ${(aggregate.accuracy * 100).toFixed(1)}%`,
-              position: 'insideTopRight',
-              style: {
-                fontFamily: typography.mono,
-                fontSize: 9,
-                fill: colors.inkMuted,
-              },
-            }}
           />
-          <Bar dataKey="accuracy" radius={[4, 4, 0, 0]} barSize={40}>
+          <Bar dataKey="accuracy" radius={[4, 4, 0, 0]} barSize={compact ? 28 : 40}>
             {chartData.map((entry, i) => (
               <Cell
                 key={i}
@@ -92,7 +88,7 @@ export default function DiseaseAccuracyChart({ diseases, aggregate }: Props) {
               formatter={(v) => `${v}%`}
               style={{
                 fontFamily: typography.mono,
-                fontSize: 10,
+                fontSize: compact ? 8 : 10,
                 fontWeight: 600,
                 fill: colors.ink,
               }}

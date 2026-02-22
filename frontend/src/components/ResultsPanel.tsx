@@ -5,11 +5,13 @@ import { CITY_CONFIGS } from '../data/cities';
 import { MODELS } from '../data/models';
 import CityResultsTab from './results/CityResultsTab';
 import CompareAllTab from './results/CompareAllTab';
+import TrendsPatterns from './results/TrendsPatterns';
+import VerdictSection from './results/VerdictSection';
 import { colors, typography, components, spacing, radii } from '../style';
 
 type Tab = 'city' | 'compare';
 
-const LOADING_DURATION = 4000; // ms total
+const LOADING_DURATION = 4000;
 
 const LOADING_STEPS = [
   { at: 0, label: (model: string) => `Testing ${model}...` },
@@ -33,7 +35,6 @@ function LoadingOverlay({ modelLabel }: { modelLabel: string }) {
       const pct = Math.min(elapsed / LOADING_DURATION, 1);
       setProgress(pct);
 
-      // Advance step label
       let idx = 0;
       for (let i = LOADING_STEPS.length - 1; i >= 0; i--) {
         if (pct >= LOADING_STEPS[i].at) {
@@ -71,7 +72,6 @@ function LoadingOverlay({ modelLabel }: { modelLabel: string }) {
         padding: spacing.xxl,
       }}
     >
-      {/* Progress bar track */}
       <div
         style={{
           width: '100%',
@@ -92,7 +92,6 @@ function LoadingOverlay({ modelLabel }: { modelLabel: string }) {
         />
       </div>
 
-      {/* Status message */}
       <AnimatePresence mode="wait">
         <motion.span
           key={stepIdx}
@@ -114,7 +113,42 @@ function LoadingOverlay({ modelLabel }: { modelLabel: string }) {
 }
 
 // ---------------------------------------------------------------------------
-// Main ResultsPanel
+// Tab button
+// ---------------------------------------------------------------------------
+
+function TabButton({
+  label,
+  active,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        flex: 1,
+        fontFamily: typography.body,
+        fontSize: 12,
+        fontWeight: active ? 600 : 400,
+        padding: '5px 12px',
+        borderRadius: radii.pill,
+        border: active ? 'none' : `1px solid ${colors.borderLight}`,
+        background: active ? colors.green400 : 'transparent',
+        color: active ? '#fff' : colors.inkMuted,
+        cursor: 'pointer',
+        transition: 'background 0.2s ease, color 0.2s ease',
+      }}
+    >
+      {label}
+    </button>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Main ResultsPanel — no-scroll flex column layout
 // ---------------------------------------------------------------------------
 
 export default function ResultsPanel() {
@@ -147,67 +181,72 @@ export default function ResultsPanel() {
         overflow: 'hidden',
       }}
     >
-      {/* Header area — non-scrollable */}
+      {/* Header + Tabs — compact, ~48px */}
       <div
         style={{
-          padding: `${spacing.lg}px ${spacing.lg}px 0`,
+          padding: `${spacing.sm}px ${spacing.md}px`,
           display: 'flex',
-          flexDirection: 'column',
-          gap: spacing.md,
+          alignItems: 'center',
+          gap: spacing.sm,
           flexShrink: 0,
+          borderBottom: `1px solid ${colors.borderLight}`,
         }}
       >
         {/* Title */}
         <h2
           style={{
             fontFamily: typography.display,
-            fontSize: '1.3rem',
+            fontSize: '1.1rem',
             fontWeight: 700,
             color: colors.green500,
             margin: 0,
+            flexShrink: 0,
           }}
         >
           Results
         </h2>
 
-        {/* Badges row */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-          <span
-            style={{
-              ...components.badge,
-              ...badgeColors,
-              fontFamily: typography.body,
-              fontWeight: 600,
-              fontSize: 12,
-            }}
-          >
-            {city.label}
-          </span>
-          <span
-            style={{
-              ...components.badge,
-              background: colors.surfaceMuted,
-              color: colors.inkMuted,
-              fontFamily: typography.mono,
-              fontWeight: 500,
-              fontSize: 11,
-            }}
-          >
-            {modelLabel}
-          </span>
-        </div>
+        {/* Badges inline */}
+        <span
+          style={{
+            ...components.badge,
+            ...badgeColors,
+            fontFamily: typography.body,
+            fontWeight: 600,
+            fontSize: 10,
+            padding: '2px 8px',
+          }}
+        >
+          {city.label}
+        </span>
+        <span
+          style={{
+            ...components.badge,
+            background: colors.surfaceMuted,
+            color: colors.inkMuted,
+            fontFamily: typography.mono,
+            fontWeight: 500,
+            fontSize: 9,
+            padding: '2px 8px',
+          }}
+        >
+          {modelLabel}
+        </span>
 
-        {/* Tab bar — only show when results are ready */}
+        {/* Spacer */}
+        <div style={{ flex: 1 }} />
+
+        {/* Tab bar inline */}
         {attackComplete && (
           <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.2 }}
             style={{
               display: 'flex',
               background: colors.surfaceAlt,
               borderRadius: radii.pill,
-              padding: 3,
+              padding: 2,
               gap: 2,
             }}
           >
@@ -225,7 +264,7 @@ export default function ResultsPanel() {
         )}
       </div>
 
-      {/* Content area */}
+      {/* Content area — fills remaining height, NO scroll */}
       <AnimatePresence mode="wait">
         {attackRunning && (
           <LoadingOverlay key="loading" modelLabel={modelLabel} />
@@ -233,59 +272,41 @@ export default function ResultsPanel() {
 
         {attackComplete && (
           <motion.div
-            key="results"
+            key={`results-${activeTab}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.4 }}
+            transition={{ duration: 0.3 }}
             style={{
               flex: 1,
-              overflowY: 'auto',
-              padding: spacing.lg,
+              display: 'flex',
+              flexDirection: 'column',
+              padding: spacing.sm,
+              gap: spacing.sm,
+              minHeight: 0,
+              overflow: 'hidden',
             }}
           >
-            {activeTab === 'city' ? (
-              <CityResultsTab
-                city={selectedCity}
-                enabledAxes={enabledBiasAxes}
-                enabledDisease={enabledDisease}
-              />
-            ) : (
-              <CompareAllTab />
-            )}
+            {/* Charts section — ~50% */}
+            <div style={{ flex: 1, minHeight: 0 }}>
+              {activeTab === 'city' ? (
+                <CityResultsTab
+                  city={selectedCity}
+                  enabledAxes={enabledBiasAxes}
+                  enabledDisease={enabledDisease}
+                />
+              ) : (
+                <CompareAllTab />
+              )}
+            </div>
+
+            {/* Trends & Patterns — ~15% */}
+            <TrendsPatterns />
+
+            {/* Verdict + Recommendation — ~15% */}
+            <VerdictSection />
           </motion.div>
         )}
       </AnimatePresence>
     </motion.div>
-  );
-}
-
-function TabButton({
-  label,
-  active,
-  onClick,
-}: {
-  label: string;
-  active: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        flex: 1,
-        fontFamily: typography.body,
-        fontSize: 13,
-        fontWeight: active ? 600 : 400,
-        padding: '7px 16px',
-        borderRadius: radii.pill,
-        border: active ? 'none' : `1px solid ${colors.borderLight}`,
-        background: active ? colors.green400 : 'transparent',
-        color: active ? '#fff' : colors.inkMuted,
-        cursor: 'pointer',
-        transition: 'background 0.2s ease, color 0.2s ease',
-      }}
-    >
-      {label}
-    </button>
   );
 }
