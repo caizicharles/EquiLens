@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion';
-import type { City, BiasAxisKey } from '../../store';
+import type { City } from '../../store';
 import { AMQA_RESULTS, MEDMCQA_RESULTS } from '../../data/results';
-import type { AMQAMetrics } from '../../data/results';
 import AccuracyRatioChart from './AccuracyRatioChart';
 import ConsistencyGauge from './ConsistencyGauge';
 import AggregateCards from './AggregateCards';
@@ -11,24 +10,15 @@ import { colors, typography, spacing } from '../../style';
 
 interface Props {
   city: City;
-  enabledAxes: Record<BiasAxisKey, boolean>;
+  enabledDemographics: boolean;
   enabledDisease: boolean;
 }
 
-export default function CityResultsTab({ city, enabledAxes, enabledDisease }: Props) {
+export default function CityResultsTab({ city, enabledDemographics, enabledDisease }: Props) {
   const amqa = AMQA_RESULTS[city];
   const medmcqa = MEDMCQA_RESULTS[city];
 
-  const filteredAMQA: Partial<Record<BiasAxisKey, AMQAMetrics>> = {};
-  for (const [key, enabled] of Object.entries(enabledAxes)) {
-    if (enabled) {
-      filteredAMQA[key as BiasAxisKey] = amqa[key as BiasAxisKey];
-    }
-  }
-
-  const hasAMQA = Object.keys(filteredAMQA).length > 0;
-
-  if (!hasAMQA && !enabledDisease) {
+  if (!enabledDemographics && !enabledDisease) {
     return (
       <div
         style={{
@@ -39,7 +29,7 @@ export default function CityResultsTab({ city, enabledAxes, enabledDisease }: Pr
           fontSize: 14,
         }}
       >
-        No axes or disease toggles enabled. Go back to sandbox to configure.
+        No toggles enabled. Go back to sandbox to configure.
       </div>
     );
   }
@@ -52,7 +42,7 @@ export default function CityResultsTab({ city, enabledAxes, enabledDisease }: Pr
       {/* Charts section */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: spacing.sm, minHeight: 0 }}>
         {/* Row 1: Accuracy Ratio (left) + Consistency Gauges (right) */}
-        {hasAMQA && (
+        {enabledDemographics && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -60,10 +50,10 @@ export default function CityResultsTab({ city, enabledAxes, enabledDisease }: Pr
             style={{ display: 'flex', gap: spacing.sm, flex: '0 0 auto' }}
           >
             <div style={{ flex: 1, minWidth: 0 }}>
-              <AccuracyRatioChart data={filteredAMQA} compact />
+              <AccuracyRatioChart data={amqa} compact />
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <ConsistencyGauge data={filteredAMQA} compact />
+              <ConsistencyGauge data={amqa} compact />
             </div>
           </motion.div>
         )}

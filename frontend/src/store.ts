@@ -15,14 +15,14 @@ export interface AppStore {
 
   // Sandbox configuration
   selectedModel: ModelId;
-  enabledBiasAxes: Record<BiasAxisKey, boolean>;
+  enabledDemographics: boolean;
   enabledDisease: boolean;
   attackRunning: boolean;
   attackComplete: boolean;
 
   // Sandbox actions
   setSelectedModel: (model: ModelId) => void;
-  toggleBiasAxis: (axis: BiasAxisKey) => void;
+  toggleDemographics: () => void;
   toggleDisease: () => void;
   runAttack: () => void;
   finishAttack: () => void;
@@ -38,24 +38,17 @@ export const useAppStore = create<AppStore>((set) => ({
 
   // Sandbox configuration
   selectedModel: 'claude-sonnet-4-6',
-  enabledBiasAxes: { ethnicity: true, gender: true, SES: true },
+  enabledDemographics: true,
   enabledDisease: true,
   attackRunning: false,
   attackComplete: false,
 
   // Sandbox actions
   setSelectedModel: (model) => set({ selectedModel: model }),
-  toggleBiasAxis: (axis) =>
-    set((s) => ({
-      enabledBiasAxes: {
-        ...s.enabledBiasAxes,
-        [axis]: !s.enabledBiasAxes[axis],
-      },
-    })),
+  toggleDemographics: () => set((s) => ({ enabledDemographics: !s.enabledDemographics })),
   toggleDisease: () => set((s) => ({ enabledDisease: !s.enabledDisease })),
 
   runAttack: () => {
-    // Transition to results immediately — the loading animation lives in ResultsPanel
     set({ attackRunning: true, attackComplete: false, phase: 'results' });
   },
 
@@ -66,7 +59,7 @@ export const useAppStore = create<AppStore>((set) => ({
   resetSandbox: () =>
     set({
       selectedModel: 'claude-sonnet-4-6',
-      enabledBiasAxes: { ethnicity: true, gender: true, SES: true },
+      enabledDemographics: true,
       enabledDisease: true,
       attackRunning: false,
       attackComplete: false,

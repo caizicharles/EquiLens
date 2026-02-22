@@ -110,22 +110,24 @@ function Toggle({
 }
 
 // ---------------------------------------------------------------------------
-// Demographic row (toggle + label + stacked bar)
+// Demographics section (single toggle + all stacked bars)
 // ---------------------------------------------------------------------------
 
-function DemographicRow({
-  axis,
+function DemographicsSection({
+  demographics,
   enabled,
   onToggle,
+  disabled = false,
 }: {
-  axis: DemographicAxis;
+  demographics: DemographicAxis[];
   enabled: boolean;
   onToggle: () => void;
+  disabled?: boolean;
 }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <Toggle on={enabled} onToggle={onToggle} />
+        <Toggle on={enabled} onToggle={onToggle} disabled={disabled} />
         <span
           style={{
             fontFamily: typography.body,
@@ -135,37 +137,56 @@ function DemographicRow({
             transition: 'color 0.2s ease',
           }}
         >
-          {axis.label}
+          Demographics
         </span>
       </div>
-      <StackedBar
-        disabled={!enabled}
-        segments={[
-          { label: axis.majorityLabel, pct: axis.majorityPct, color: axis.majorityColor },
-          { label: axis.minorityLabel, pct: axis.minorityPct, color: axis.minorityColor },
-        ]}
-      />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: spacing.xs }}>
+        {demographics.map((axis) => (
+          <div key={axis.key} style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <span
+              style={{
+                fontFamily: typography.body,
+                fontSize: 11,
+                fontWeight: 500,
+                color: enabled ? colors.inkMuted : colors.inkLight,
+                transition: 'color 0.2s ease',
+              }}
+            >
+              {axis.label}
+            </span>
+            <StackedBar
+              disabled={!enabled}
+              segments={[
+                { label: axis.majorityLabel, pct: axis.majorityPct, color: axis.majorityColor },
+                { label: axis.minorityLabel, pct: axis.minorityPct, color: axis.minorityColor },
+              ]}
+            />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
 
 // ---------------------------------------------------------------------------
-// Disease row (toggle + stacked bar)
+// Disease section (toggle + stacked bar)
 // ---------------------------------------------------------------------------
 
-function DiseaseRow({
+function DiseaseSection({
   diseases,
   enabled,
   onToggle,
+  disabled = false,
 }: {
   diseases: DiseaseSlice[];
   enabled: boolean;
   onToggle: () => void;
+  disabled?: boolean;
 }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <Toggle on={enabled} onToggle={onToggle} />
+        <Toggle on={enabled} onToggle={onToggle} disabled={disabled} />
         <span
           style={{
             fontFamily: typography.body,
@@ -197,9 +218,11 @@ function DiseaseRow({
 function ModelSelector({
   value,
   onChange,
+  disabled = false,
 }: {
   value: ModelId;
   onChange: (m: ModelId) => void;
+  disabled?: boolean;
 }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -218,6 +241,7 @@ function ModelSelector({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value as ModelId)}
+        disabled={disabled}
         style={{
           fontFamily: typography.body,
           fontSize: 14,
@@ -227,7 +251,8 @@ function ModelSelector({
           border: `1px solid ${colors.border}`,
           background: colors.surface,
           color: colors.ink,
-          cursor: 'pointer',
+          cursor: disabled ? 'not-allowed' : 'pointer',
+          opacity: disabled ? 0.6 : 1,
           outline: 'none',
           appearance: 'none',
           backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' stroke='%235A6355' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")`,
@@ -258,13 +283,13 @@ interface SandboxPanelProps {
 export default function SandboxPanel({ resultsMode = false }: SandboxPanelProps) {
   const selectedCity = useAppStore((s) => s.selectedCity);
   const selectedModel = useAppStore((s) => s.selectedModel);
-  const enabledBiasAxes = useAppStore((s) => s.enabledBiasAxes);
+  const enabledDemographics = useAppStore((s) => s.enabledDemographics);
   const enabledDisease = useAppStore((s) => s.enabledDisease);
   const attackRunning = useAppStore((s) => s.attackRunning);
   const setPhase = useAppStore((s) => s.setPhase);
   const selectCity = useAppStore((s) => s.selectCity);
   const setSelectedModel = useAppStore((s) => s.setSelectedModel);
-  const toggleBiasAxis = useAppStore((s) => s.toggleBiasAxis);
+  const toggleDemographics = useAppStore((s) => s.toggleDemographics);
   const toggleDisease = useAppStore((s) => s.toggleDisease);
   const runAttack = useAppStore((s) => s.runAttack);
   const resetSandbox = useAppStore((s) => s.resetSandbox);
@@ -274,8 +299,8 @@ export default function SandboxPanel({ resultsMode = false }: SandboxPanelProps)
   const city = CITY_CONFIGS[selectedCity];
   const badgeColors = components[city.badgeStyle] as { background: string; color: string };
 
-  const hasAnyEnabled =
-    enabledBiasAxes.ethnicity || enabledBiasAxes.gender || enabledBiasAxes.SES || enabledDisease;
+  const hasAnyEnabled = enabledDemographics || enabledDisease;
+  const frozen = resultsMode;
 
   const handleBack = () => {
     resetSandbox();
@@ -283,7 +308,6 @@ export default function SandboxPanel({ resultsMode = false }: SandboxPanelProps)
     setPhase('map');
   };
 
-  // In results mode the button is disabled (already completed)
   const buttonDisabled = resultsMode || attackRunning || !hasAnyEnabled;
 
   return (
@@ -351,62 +375,29 @@ export default function SandboxPanel({ resultsMode = false }: SandboxPanelProps)
       <div style={{ height: 1, background: colors.borderLight }} />
 
       {/* Model selector */}
-      <ModelSelector value={selectedModel} onChange={setSelectedModel} />
+      <ModelSelector value={selectedModel} onChange={setSelectedModel} disabled={frozen} />
 
       {/* Divider */}
       <div style={{ height: 1, background: colors.borderLight }} />
 
-      {/* Demographics section */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-        <h3
-          style={{
-            fontFamily: typography.body,
-            fontSize: 12,
-            fontWeight: 500,
-            color: colors.inkMuted,
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-            margin: 0,
-          }}
-        >
-          Demographics
-        </h3>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: spacing.sm }}>
-          {city.demographics.map((axis) => (
-            <DemographicRow
-              key={axis.key}
-              axis={axis}
-              enabled={enabledBiasAxes[axis.key]}
-              onToggle={() => toggleBiasAxis(axis.key)}
-            />
-          ))}
-        </div>
-      </div>
+      {/* Demographics — single toggle */}
+      <DemographicsSection
+        demographics={city.demographics}
+        enabled={enabledDemographics}
+        onToggle={toggleDemographics}
+        disabled={frozen}
+      />
 
       {/* Divider */}
       <div style={{ height: 1, background: colors.borderLight }} />
 
-      {/* Disease section */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-        <h3
-          style={{
-            fontFamily: typography.body,
-            fontSize: 12,
-            fontWeight: 500,
-            color: colors.inkMuted,
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-            margin: 0,
-          }}
-        >
-          Disease Prevalence
-        </h3>
-        <DiseaseRow
-          diseases={city.diseases}
-          enabled={enabledDisease}
-          onToggle={toggleDisease}
-        />
-      </div>
+      {/* Disease — single toggle */}
+      <DiseaseSection
+        diseases={city.diseases}
+        enabled={enabledDisease}
+        onToggle={toggleDisease}
+        disabled={frozen}
+      />
 
       {/* Spacer — pushes button to bottom */}
       <div style={{ flex: 1 }} />

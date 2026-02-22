@@ -155,7 +155,7 @@ export default function ResultsPanel() {
   const [activeTab, setActiveTab] = useState<Tab>('city');
   const selectedCity = useAppStore((s) => s.selectedCity);
   const selectedModel = useAppStore((s) => s.selectedModel);
-  const enabledBiasAxes = useAppStore((s) => s.enabledBiasAxes);
+  const enabledDemographics = useAppStore((s) => s.enabledDemographics);
   const enabledDisease = useAppStore((s) => s.enabledDisease);
   const attackRunning = useAppStore((s) => s.attackRunning);
   const attackComplete = useAppStore((s) => s.attackComplete);
@@ -291,7 +291,7 @@ export default function ResultsPanel() {
               {activeTab === 'city' ? (
                 <CityResultsTab
                   city={selectedCity}
-                  enabledAxes={enabledBiasAxes}
+                  enabledDemographics={enabledDemographics}
                   enabledDisease={enabledDisease}
                 />
               ) : (

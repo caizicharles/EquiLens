@@ -53,15 +53,6 @@ function buildRows(): RowDef[] {
   return rows;
 }
 
-function cellBg(val: number, rowVals: number[]): string {
-  if (rowVals.length < 2) return 'transparent';
-  const min = Math.min(...rowVals);
-  const max = Math.max(...rowVals);
-  if (val === min && min !== max) return 'rgba(196, 92, 74, 0.08)';
-  if (val === max && min !== max) return 'rgba(240, 247, 232, 0.6)';
-  return 'transparent';
-}
-
 interface Props {
   compact?: boolean;
 }
@@ -111,10 +102,6 @@ export default function CrossCityTable({ compact = false }: Props) {
         </thead>
         <tbody>
           {rows.map((row, ri) => {
-            const numVals = ALL_CITIES.map((c) => row.getter(c)).filter(
-              (v): v is number => typeof v === 'number',
-            );
-
             return (
               <tr
                 key={row.label}
@@ -136,7 +123,7 @@ export default function CrossCityTable({ compact = false }: Props) {
                 {ALL_CITIES.map((city) => {
                   const val = row.getter(city);
                   const isNum = typeof val === 'number';
-                  const bg = isNum ? cellBg(val, numVals) : 'transparent';
+                  const bg = 'transparent';
                   const pctColor = isNum
                     ? val >= 0.9
                       ? colors.green400
