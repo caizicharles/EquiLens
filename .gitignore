@@ -72,7 +72,7 @@ venv.bak/
 *~
 
 # Data and models
-*.csv
+# *.csv
 *.pkl
 *.joblib
 # data/
