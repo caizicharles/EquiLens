@@ -286,7 +286,7 @@ export default function ResultsPanel() {
         )}
       </div>
 
-      {/* Content area — fills remaining height, NO scroll */}
+      {/* Content area — fills remaining height, scrolls if needed */}
       <AnimatePresence mode="wait">
         {attackRunning && (
           <LoadingOverlay key="loading" modelLabel={modelLabel} />
@@ -304,7 +304,8 @@ export default function ResultsPanel() {
               flexDirection: 'column',
               padding: spacing.sm,
               minHeight: 0,
-              overflow: 'hidden',
+              overflowY: 'auto',
+              overflowX: 'hidden',
             }}
           >
             {activeTab === 'city' ? (

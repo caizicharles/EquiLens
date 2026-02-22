@@ -43,7 +43,7 @@ export default function CityResultsTab({ city, model, enabledDemographics, enabl
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: spacing.sm, height: '100%' }}>
       {/* Text Summary */}
-      <TextSummary city={city} mode={mode} />
+      <TextSummary city={city} mode={mode} model={model} />
 
       {/* Charts section */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: spacing.sm, minHeight: 0 }}>
@@ -87,10 +87,10 @@ export default function CityResultsTab({ city, model, enabledDemographics, enabl
       </div>
 
       {/* Findings */}
-      <TrendsPatterns city={city} mode={mode} />
+      <TrendsPatterns city={city} mode={mode} model={model} />
 
       {/* Verdict + Recommendation */}
-      <VerdictSection city={city} mode={mode} />
+      <VerdictSection city={city} mode={mode} model={model} />
     </div>
   );
 }

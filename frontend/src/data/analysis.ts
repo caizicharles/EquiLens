@@ -1,9 +1,17 @@
 import type { City } from '../store';
+import type { ModelId } from './models';
 
+// Claude analysis data
 import londonData from './analysis/london.json';
 import edinburghData from './analysis/edinburgh.json';
 import dublinData from './analysis/dublin.json';
 import crossCityData from './analysis/cross_city.json';
+
+// GPT-5 analysis data
+import gpt5LondonData from './analysis/gpt5/london.json';
+import gpt5EdinburghData from './analysis/gpt5/edinburgh.json';
+import gpt5DublinData from './analysis/gpt5/dublin.json';
+import gpt5CrossCityData from './analysis/gpt5/cross_city.json';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -30,20 +38,38 @@ export type VerdictStatus = 'not_recommended' | 'conditional' | 'recommended';
 // Data accessors
 // ---------------------------------------------------------------------------
 
-const CITY_ANALYSIS: Record<City, CityAnalysisSections> = {
+const CLAUDE_CITY_ANALYSIS: Record<City, CityAnalysisSections> = {
   london: (londonData as Record<string, unknown>).london as CityAnalysisSections,
   edinburgh: (edinburghData as Record<string, unknown>).edinburgh as CityAnalysisSections,
   dublin: (dublinData as Record<string, unknown>).dublin as CityAnalysisSections,
 };
 
-const CROSS_CITY_ANALYSIS = (crossCityData as Record<string, unknown>).cross_city as CityAnalysisSections;
+const CLAUDE_CROSS_CITY = (crossCityData as Record<string, unknown>).cross_city as CityAnalysisSections;
 
-export function getAnalysis(city: City, mode: AnalysisMode): AnalysisSection {
-  return CITY_ANALYSIS[city][mode];
+const GPT5_CITY_ANALYSIS: Record<City, CityAnalysisSections> = {
+  london: (gpt5LondonData as Record<string, unknown>).london as CityAnalysisSections,
+  edinburgh: (gpt5EdinburghData as Record<string, unknown>).edinburgh as CityAnalysisSections,
+  dublin: (gpt5DublinData as Record<string, unknown>).dublin as CityAnalysisSections,
+};
+
+const GPT5_CROSS_CITY = (gpt5CrossCityData as Record<string, unknown>).cross_city as CityAnalysisSections;
+
+const MODEL_CITY_ANALYSIS: Record<ModelId, Record<City, CityAnalysisSections>> = {
+  'claude-sonnet-4-6': CLAUDE_CITY_ANALYSIS,
+  'gpt-5': GPT5_CITY_ANALYSIS,
+};
+
+const MODEL_CROSS_CITY: Record<ModelId, CityAnalysisSections> = {
+  'claude-sonnet-4-6': CLAUDE_CROSS_CITY,
+  'gpt-5': GPT5_CROSS_CITY,
+};
+
+export function getAnalysis(city: City, mode: AnalysisMode, model: ModelId = 'claude-sonnet-4-6'): AnalysisSection {
+  return MODEL_CITY_ANALYSIS[model][city][mode];
 }
 
-export function getCrossCityAnalysis(mode: AnalysisMode): AnalysisSection {
-  return CROSS_CITY_ANALYSIS[mode];
+export function getCrossCityAnalysis(mode: AnalysisMode, model: ModelId = 'claude-sonnet-4-6'): AnalysisSection {
+  return MODEL_CROSS_CITY[model][mode];
 }
 
 // ---------------------------------------------------------------------------

@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import type { City } from '../../store';
+import type { ModelId } from '../../data/models';
 import type { AnalysisMode } from '../../data/analysis';
 import {
   getAnalysis,
@@ -14,10 +15,11 @@ import { colors, typography, spacing, radii } from '../../style';
 interface Props {
   city: City;
   mode: AnalysisMode;
+  model?: ModelId;
 }
 
-export default function VerdictSection({ city, mode }: Props) {
-  const section = getAnalysis(city, mode);
+export default function VerdictSection({ city, mode, model = 'claude-sonnet-4-6' }: Props) {
+  const section = getAnalysis(city, mode, model);
   if (!section.verdict) return null;
 
   const status = parseVerdictStatus(section.verdict);

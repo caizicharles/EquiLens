@@ -16,7 +16,7 @@ export default function CompareAllTab({ model, mode }: Props) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: spacing.sm, height: '100%' }}>
       {/* Text Summary */}
-      <TextSummary isCompare mode={mode} />
+      <TextSummary isCompare mode={mode} model={model} />
 
       {/* Charts section */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: spacing.sm, minHeight: 0 }}>
@@ -47,7 +47,7 @@ export default function CompareAllTab({ model, mode }: Props) {
       </div>
 
       {/* Findings (no verdict for cross-city) */}
-      <TrendsPatterns isCompare mode={mode} />
+      <TrendsPatterns isCompare mode={mode} model={model} />
     </div>
   );
 }

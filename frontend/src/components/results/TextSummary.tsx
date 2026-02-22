@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import type { City } from '../../store';
+import type { ModelId } from '../../data/models';
 import type { AnalysisMode } from '../../data/analysis';
 import { getAnalysis, getCrossCityAnalysis } from '../../data/analysis';
 import { renderAnalysisText } from './renderAnalysisText';
@@ -9,13 +10,14 @@ interface Props {
   city?: City;
   isCompare?: boolean;
   mode: AnalysisMode;
+  model?: ModelId;
 }
 
-export default function TextSummary({ city, isCompare = false, mode }: Props) {
+export default function TextSummary({ city, isCompare = false, mode, model = 'claude-sonnet-4-6' }: Props) {
   const section = isCompare
-    ? getCrossCityAnalysis(mode)
+    ? getCrossCityAnalysis(mode, model)
     : city
-      ? getAnalysis(city, mode)
+      ? getAnalysis(city, mode, model)
       : null;
 
   if (!section) return null;
