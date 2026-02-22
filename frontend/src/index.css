@@ -39,6 +39,11 @@ body {
     radial-gradient(ellipse at 60% 80%, rgba(245, 223, 192, 0.2) 0%, transparent 50%);
 }
 
+/* Hide the gradient wash when terrain map is the background */
+#root.phase-map::before {
+  display: none;
+}
+
 ::selection {
   background: #B4E08C;
   color: #4A6B3F;

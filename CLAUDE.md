@@ -375,7 +375,86 @@ The frontend reads pre-computed JSONs from `results_analysis/result_analysis_sco
 
 ### Design System
 
-"Cartographic Laboratory" — light, clinical, terrain-inspired. Full spec in `style.ts`.
+Aesthetic: "Cartographic Laboratory" — but NOT sterile or corporate. Think: soft morning light falling across a cartographer's desk. The vibe is light, airy, organic, and gently vibrant. The dominant impression should be LUSH PASTEL GREEN — like spring lowlands on a survey map — against near-white, with ocean-blue and warm peach as supporting tones.
+
+The overall feeling is FRESH, ALIVE, NATURAL — not muted, not grey, not corporate. Like opening a beautifully illustrated atlas.
+
+Full implementation lives in `frontend/src/style.ts`. Below are the canonical values — `style.ts` is the source of truth, but these values should be referenced when making any UI decision.
+
+#### Color Palette
+
+Backgrounds:
+- surface: '#F8FAF6' — barely green-tinted white. NOT warm beige, NOT pure white
+- surfaceAlt: '#F0F4EC' — slightly more green for alternating sections/cards
+- surfaceMuted: '#E8EDE3' — inset panels or disabled states
+
+Hero Greens (dominant palette — must feel VIBRANT and alive):
+- green50: '#F0F7E8' — lightest wash, background tints
+- green100: '#D9EECC' — light green, hover states, subtle fills
+- green200: '#B4E08C' — VIBRANT pastel green. Hero color, chart fills, accents
+- green300: '#A0D470' — slightly richer, active states, primary buttons
+- green400: '#7EBF4E' — strong green, important accents
+- green500: '#6B8F5E' — dark sage, headings, logo, primary brand mark
+- green600: '#4A6B3F' — deepest green, text on light green backgrounds
+
+Ocean Blues:
+- ocean: '#AAD7F0' — map ocean background, secondary fills
+- oceanLight: '#C4E4F5' — subtle washes
+- oceanDeep: '#7DBBD8' — links, interactive elements
+
+Warm Accents:
+- peach: '#F5DFC0' — badge backgrounds, highlights
+- peachLight: '#FAF0E4' — barely-there warm wash
+- gold: '#E8C87A' — golden indicators
+
+Terrain Scale:
+- terrainLow: '#C6DEAC', terrainMid: '#D8C8A0', terrainHigh: '#DADAD4'
+
+Text (all slightly green-tinted, never neutral grey):
+- ink: '#2C2C2C', inkMuted: '#5A6355', inkLight: '#8A9484'
+
+Borders:
+- border: '#D4DCC8', borderLight: '#E4EAD8'
+
+Semantic:
+- alertRed: '#C45C4A' (warm terracotta), alertAmber: '#D4A03C', alertGreen: '#5B8C50'
+
+#### Signature Visual: Organic Gradient Wash
+
+The brand's most distinctive element — soft organic blobs of sage green, ocean blue, and peach, overlapping on near-white. Applied as a fixed background behind the whole app via a CSS pseudo-element on #root. Three overlapping radial gradients:
+- Green blob (dominant, left-center)
+- Ocean blob (top-right)
+- Peach blob (bottom-right)
+
+#### Component Patterns
+
+Cards: semi-transparent white (rgba 255,255,255,0.75) with backdrop-filter blur(12px) — frosted glass effect floating over the gradient wash. Green-tinted shadows (never grey shadows). Subtle green-grey borders.
+
+Badges: pill-shaped. Variants: badgeGreen (#D9EECC/#4A6B3F), badgeOcean (#C4E4F5/#3A7A9B), badgePeach (#FAF0E4/#8B6B3A), badgeAlert (#F5D5CF/#8B3A2E).
+
+All shadows throughout the UI are green-tinted (rgba of sage green), NOT neutral grey.
+
+#### Typography
+
+- Display: 'Playfair Display', Georgia, serif — headings, editorial cartographic feel
+- Body: 'DM Sans', 'Helvetica Neue', sans-serif — clean readable
+- Mono: 'JetBrains Mono', 'Fira Code', monospace — metrics, data values
+
+#### Chart Colors
+
+- City palette: green (#7EBF4E) = London, ocean (#AAD7F0) = Edinburgh, gold (#E8C87A) = Dublin
+- Diverging bias scale: alertRed → surface → green (red = biased, green = fair)
+- All chart fills must be vivid enough to read on the light surface backgrounds
+
+#### Design Rules
+
+1. NEVER use neutral grey — all greys are green-tinted
+2. NEVER use pure white (#FFF) as a background — always use surface (#F8FAF6)
+3. NEVER use pure black — use ink (#2C2C2C)
+4. Shadows are ALWAYS green-tinted rgba, not black/grey rgba
+5. The organic gradient wash should be visible on every screen as ambient background
+6. Cards float over the wash with frosted glass effect
+7. The overall palette should feel like a spring morning, not a corporate dashboard
 
 ---
 
