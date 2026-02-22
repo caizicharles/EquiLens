@@ -47,7 +47,7 @@ export default function AggregateCards({ aggregate, compact = false }: Props) {
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: spacing.xs,
+              gap: 2,
               boxShadow: shadows.subtle,
             }}
           >

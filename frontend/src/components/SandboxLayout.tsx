@@ -4,7 +4,6 @@ import { TerrainRenderer } from '../terrain/TerrainRenderer';
 import { BOUNDS } from '../terrain/projection';
 import MapLabels from './MapLabels';
 import SandboxPanel from './SandboxPanel';
-import { spacing } from '../style';
 
 // Same aspect-ratio logic as TerrainMap, but sized for left 55%
 const LAT_RANGE = BOUNDS.maxLat - BOUNDS.minLat;
@@ -15,7 +14,7 @@ const GEO_ASPECT = (LNG_RANGE * COS_FACTOR) / LAT_RANGE;
 
 const MAP_FRACTION = 0.55;
 const PANEL_FRACTION = 0.45;
-const PADDING = spacing.xl;
+const PADDING = 32;
 
 function computeMapSize(vpW: number, vpH: number) {
   const mapAreaW = vpW * MAP_FRACTION - PADDING * 2;

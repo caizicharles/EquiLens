@@ -10,7 +10,7 @@ import {
   LabelList,
 } from 'recharts';
 import type { DiseaseMetrics, AggregateMetrics } from '../../data/results';
-import { colors, typography, chartColors, radii } from '../../style';
+import { colors, typography, chartColors } from '../../style';
 
 interface Props {
   diseases: Record<string, DiseaseMetrics>;
@@ -73,7 +73,7 @@ export default function DiseaseAccuracyChart({ diseases, aggregate, compact = fa
             strokeDasharray="6 3"
             strokeWidth={1}
           />
-          <Bar dataKey="accuracy" radius={[radii.sm, radii.sm, 0, 0]} barSize={compact ? 28 : 40}>
+          <Bar dataKey="accuracy" radius={[4, 4, 0, 0]} barSize={compact ? 28 : 40}>
             {chartData.map((entry, i) => (
               <Cell
                 key={i}

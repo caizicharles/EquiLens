@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import type { DiseaseMetrics } from '../../data/results';
-import { colors, typography, radii, spacing } from '../../style';
+import { colors, typography, radii } from '../../style';
 
 interface Props {
   diseases: Record<string, DiseaseMetrics>;
@@ -27,7 +27,7 @@ const thStyle: React.CSSProperties = {
   color: colors.inkMuted,
   textTransform: 'uppercase',
   letterSpacing: '0.03em',
-  padding: `${spacing.sm}px ${spacing.sm}px`,
+  padding: '8px 8px',
   textAlign: 'left',
   background: colors.surfaceAlt,
 };
@@ -35,7 +35,7 @@ const thStyle: React.CSSProperties = {
 const tdBase: React.CSSProperties = {
   fontFamily: typography.mono,
   fontSize: 12,
-  padding: `${spacing.sm}px ${spacing.sm}px`,
+  padding: '7px 8px',
 };
 
 export default function DiseaseMetricsTable({ diseases }: Props) {
@@ -80,12 +80,7 @@ export default function DiseaseMetricsTable({ diseases }: Props) {
                   fontFamily: typography.body,
                   fontWeight: 500,
                   color: colors.ink,
-                  maxWidth: 140,
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
                 }}
-                title={name}
               >
                 {name}
               </td>

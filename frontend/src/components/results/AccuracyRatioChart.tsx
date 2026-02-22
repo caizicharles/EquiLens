@@ -12,7 +12,7 @@ import {
 import type { BiasAxisKey } from '../../store';
 import type { AMQAMetrics } from '../../data/results';
 import { BIAS_AXIS_LABELS } from '../../data/results';
-import { colors, typography, spacing, radii } from '../../style';
+import { colors, typography } from '../../style';
 
 interface Props {
   data: Partial<Record<BiasAxisKey, AMQAMetrics>>;
@@ -44,7 +44,7 @@ export default function AccuracyRatioChart({ data, compact = false }: Props) {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      style={{ display: 'flex', flexDirection: 'column', gap: spacing.xs }}
+      style={{ display: 'flex', flexDirection: 'column', gap: 2 }}
     >
       <span
         style={{
@@ -98,7 +98,7 @@ export default function AccuracyRatioChart({ data, compact = false }: Props) {
             strokeDasharray="4 3"
             strokeWidth={1}
           />
-          <Bar dataKey="ratio" radius={[0, radii.sm, radii.sm, 0]} barSize={compact ? 14 : 20}>
+          <Bar dataKey="ratio" radius={[0, 4, 4, 0]} barSize={compact ? 14 : 20}>
             {chartData.map((entry, i) => (
               <Cell key={i} fill={entry.color} />
             ))}

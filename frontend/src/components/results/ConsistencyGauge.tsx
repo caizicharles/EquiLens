@@ -44,7 +44,7 @@ function GaugeRow({
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.25, delay }}
-      style={{ display: 'flex', flexDirection: 'column', gap: compact ? spacing.xs : spacing.sm }}
+      style={{ display: 'flex', flexDirection: 'column', gap: compact ? 2 : 6 }}
     >
       {/* Label row */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -58,7 +58,7 @@ function GaugeRow({
         >
           {BIAS_AXIS_LABELS[axisKey]}
         </span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: spacing.xs }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           <span
             style={{
               fontFamily: typography.mono,
@@ -80,8 +80,8 @@ function GaugeRow({
                 badge.color === colors.oceanDeep
                   ? colors.oceanLight
                   : badge.color === colors.alertAmber
-                    ? `${colors.alertAmber}26`
-                    : `${colors.alertRed}26`,
+                    ? 'rgba(212, 160, 60, 0.15)'
+                    : 'rgba(196, 92, 74, 0.15)',
               color: badge.color,
             }}
           >
@@ -140,7 +140,7 @@ export default function ConsistencyGauge({ data, compact = false }: Props) {
   if (entries.length === 0) return null;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: spacing.xs }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       <span
         style={{
           fontFamily: typography.body,

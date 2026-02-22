@@ -11,7 +11,7 @@ import {
 } from 'recharts';
 import type { BiasAxisKey } from '../../store';
 import { AMQA_RESULTS, BIAS_AXIS_LABELS, ALL_CITIES, CITY_LABELS } from '../../data/results';
-import { colors, typography, spacing, radii } from '../../style';
+import { colors, typography } from '../../style';
 
 const CITY_COLORS: Record<string, string> = {
   london: colors.green400,
@@ -41,7 +41,7 @@ export default function CrossCityBars({ metric, title, compact = false }: Props)
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      style={{ display: 'flex', flexDirection: 'column', gap: spacing.xs, height: '100%' }}
+      style={{ display: 'flex', flexDirection: 'column', gap: 2, height: '100%' }}
     >
       <span
         style={{
@@ -94,14 +94,10 @@ export default function CrossCityBars({ metric, title, compact = false }: Props)
               wrapperStyle={{
                 fontFamily: typography.body,
                 fontSize: compact ? 9 : 11,
-                color: colors.inkMuted,
-                paddingTop: spacing.xs,
               }}
-              iconType="circle"
-              iconSize={compact ? 6 : 8}
             />
             {ALL_CITIES.map((city) => (
-              <Bar key={city} dataKey={city} fill={CITY_COLORS[city]} radius={[radii.sm, radii.sm, 0, 0]} barSize={compact ? 12 : 18}>
+              <Bar key={city} dataKey={city} fill={CITY_COLORS[city]} radius={[3, 3, 0, 0]} barSize={compact ? 12 : 18}>
                 <LabelList
                   dataKey={city}
                   position="top"
