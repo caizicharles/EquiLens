@@ -12,14 +12,12 @@ interface RGB {
 }
 
 const TERRAIN_STOPS: { t: number; color: RGB }[] = [
-  { t: 0.0, color: { r: 198, g: 222, b: 172 } },
-  { t: 0.3, color: { r: 194, g: 216, b: 164 } },
-  { t: 0.45, color: { r: 189, g: 210, b: 156 } },
-  { t: 0.6, color: { r: 204, g: 206, b: 158 } },
-  { t: 0.7, color: { r: 216, g: 200, b: 160 } },
-  { t: 0.8, color: { r: 208, g: 200, b: 180 } },
-  { t: 0.9, color: { r: 212, g: 208, b: 196 } },
-  { t: 1.0, color: { r: 218, g: 218, b: 212 } },
+  { t: 0.0, color: { r: 198, g: 222, b: 172 } },   // lowland fresh green
+  { t: 0.3, color: { r: 185, g: 212, b: 156 } },   // lowland deeper green
+  { t: 0.5, color: { r: 172, g: 200, b: 144 } },   // rolling hills green
+  { t: 0.7, color: { r: 190, g: 196, b: 168 } },   // upland sage-grey
+  { t: 0.85, color: { r: 205, g: 208, b: 196 } },  // mountain muted sage
+  { t: 1.0, color: { r: 218, g: 218, b: 212 } },   // peak light grey
 ];
 
 function sampleTerrainColor(t: number): RGB {
@@ -138,9 +136,8 @@ export class TerrainRenderer {
     const w = cssW;
     const h = cssH;
 
-    // --- Layer 1: Ocean fill ---
-    ctx.fillStyle = 'rgb(170, 215, 240)';
-    ctx.fillRect(0, 0, w, h);
+    // --- Layer 1: Clear canvas (transparent — heroWash gradient shows through) ---
+    ctx.clearRect(0, 0, w, h);
 
     // --- Build land mask on offscreen canvas ---
     const maskCanvas = document.createElement('canvas');
@@ -274,9 +271,7 @@ export class TerrainRenderer {
     }
   }
 
-  resize(width: number, height: number): void {
-    this.canvas.style.width = width + 'px';
-    this.canvas.style.height = height + 'px';
+  resize(_width: number, _height: number): void {
     this.render();
   }
 
