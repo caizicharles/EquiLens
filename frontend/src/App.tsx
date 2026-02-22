@@ -2,15 +2,10 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useAppStore } from './store';
 import { colors, typography, components, spacing } from './style';
 import TerrainMap from './components/TerrainMap';
+import SandboxLayout from './components/SandboxLayout';
 
-function SandboxPlaceholder() {
-  const selectedCity = useAppStore((s) => s.selectedCity);
+function ResultsPlaceholder() {
   const setPhase = useAppStore((s) => s.setPhase);
-  const selectCity = useAppStore((s) => s.selectCity);
-
-  const cityLabel = selectedCity
-    ? selectedCity.charAt(0).toUpperCase() + selectedCity.slice(1)
-    : '';
 
   return (
     <div
@@ -44,7 +39,7 @@ function SandboxPlaceholder() {
             margin: 0,
           }}
         >
-          Sandbox
+          Results
         </h1>
         <p
           style={{
@@ -54,13 +49,10 @@ function SandboxPlaceholder() {
             margin: 0,
           }}
         >
-          {cityLabel}
+          Attack simulation complete. Results dashboard coming soon.
         </p>
         <button
-          onClick={() => {
-            selectCity(null as never);
-            setPhase('map');
-          }}
+          onClick={() => setPhase('sandbox')}
           style={{
             fontFamily: typography.body,
             fontWeight: 500,
@@ -73,7 +65,7 @@ function SandboxPlaceholder() {
             cursor: 'pointer',
           }}
         >
-          Back to Map
+          Back to Sandbox
         </button>
       </div>
     </div>
@@ -111,7 +103,19 @@ function App() {
           animate="animate"
           exit="exit"
         >
-          <SandboxPlaceholder />
+          <SandboxLayout />
+        </motion.div>
+      )}
+
+      {phase === 'results' && (
+        <motion.div
+          key="results"
+          variants={pageVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+        >
+          <ResultsPlaceholder />
         </motion.div>
       )}
     </AnimatePresence>

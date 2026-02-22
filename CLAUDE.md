@@ -351,6 +351,57 @@ Zero-dependency, self-contained HTML Canvas renderer. No Mapbox GL tiles.
 - **Coastlines**: ~120 control points per land mass, Catmull-Rom smoothed (12 subdivisions)
 - **API**: `render()`, `resize(w, h)`, `destroy()`, `toDataURL()`, `toBlob()`
 
+### Phase 2: Sandbox — City Configuration Panel
+
+Triggered when user clicks one of the three city markers (London, Edinburgh, Dublin) on the Phase 1 map.
+
+#### Layout Transition
+
+- The UK terrain map slides LEFT (animates to occupy roughly the left 55% of the viewport)
+- The selected city's marker becomes highlighted (larger dot, brighter glow, other cities dim slightly)
+- A configuration panel slides in from the RIGHT edge, occupying roughly the right 40% of the viewport
+- A narrow vertical stripe on the far right is reserved for the results summary (initially empty/placeholder)
+
+#### Sandbox Config Panel (right panel) — top to bottom:
+
+1. **Header**: "Sandbox Configs" — display font, colors.green500
+2. **Selected City**: City name displayed prominently with the city's badge color. A back/close button returns to Phase 1 map.
+3. **Model Selection**: Dropdown selector for the target LLM model:
+   - Claude Sonnet 4.6 (default, pre-selected)
+   - Gemini (if results exist)
+4. **Demographics Composition** (for AMQA adversarial attacks): Three sub-sections (Ethnicity, Gender, SES), each with:
+   - A toggle to include/exclude this demographic axis from the attack
+   - A horizontal stacked bar showing the composition split with percentage labels
+   - Compositions per city:
+     - London: Ethnicity 80/20 W/B, Gender 60/40 M/F, SES 90/10 H/L
+     - Edinburgh: Ethnicity 90/10 W/B, Gender 40/60 M/F, SES 90/10 H/L
+     - Dublin: Ethnicity 90/10 W/B, Gender 50/50 M/F, SES 80/20 H/L
+5. **Disease Composition** (for MedMCQA performance): A toggle + horizontal stacked bar:
+   - London: Cancer 53.4%, Dementia/Neuro 24.6%, Cardiovascular 22.0%
+   - Edinburgh: Cancer 54.3%, Cardiovascular 23.9%, Respiratory 21.7%
+   - Dublin: Cancer 42.5%, Cardiovascular 39.7%, Respiratory 17.8%
+6. **Run Attack Button**: Primary action button (colors.green400 bg, white text). On click → Phase 3 (loads pre-computed results).
+
+#### Results Stripe (far right)
+
+Narrow vertical area (~5% width) on the far right edge, initially showing a placeholder. After "Run Attack", expands or transitions to full results dashboard (Phase 3).
+
+#### State Machine Transitions
+
+- Phase 1 (map) → click city → Phase 2 (sandbox) with selected city
+- Phase 2 (sandbox) → click "Run Attack" → Phase 3 (results) with selected city + config
+- Phase 2 (sandbox) → click back/close → Phase 1 (map)
+- Phase 3 (results) → click back → Phase 2 (sandbox) OR Phase 1 (map)
+
+#### Zustand Store Additions
+
+```typescript
+selectedModel: 'claude-sonnet-4-6' | 'gemini'  // default: 'claude-sonnet-4-6'
+enabledBiasAxes: { ethnicity: boolean, gender: boolean, SES: boolean }  // default: all true
+enabledDisease: boolean  // default: true
+setSelectedModel, toggleBiasAxis, toggleDisease  // actions
+```
+
 ### Phase 3: Results Visualisation
 
 The frontend reads pre-computed JSONs from `results_analysis/result_analysis_scores/`. No live LLM inference needed.
