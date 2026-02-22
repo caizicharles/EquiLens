@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { TerrainRenderer } from '../terrain/TerrainRenderer';
 import { BOUNDS } from '../terrain/projection';
 import MapLabels from './MapLabels';
+import { spacing } from '../style';
 
 // Correct aspect ratio accounting for latitude distortion
 const LAT_RANGE = BOUNDS.maxLat - BOUNDS.minLat;
@@ -10,7 +11,7 @@ const MID_LAT = (BOUNDS.minLat + BOUNDS.maxLat) / 2;
 const COS_FACTOR = Math.cos((MID_LAT * Math.PI) / 180);
 const GEO_ASPECT = (LNG_RANGE * COS_FACTOR) / LAT_RANGE;
 
-const PADDING = 48;
+const PADDING = spacing.xxl;
 
 function computeSize(vpW: number, vpH: number) {
   const availW = vpW - PADDING * 2;

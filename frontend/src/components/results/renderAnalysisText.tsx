@@ -41,7 +41,7 @@ export function renderAnalysisText(
 ): React.ReactNode {
   const paragraphs = text.split(/\n\n+/);
   return paragraphs.map((para, i) => (
-    <p key={i} style={{ ...style, margin: 0, marginTop: i > 0 ? 6 : 0 }}>
+    <p key={i} style={{ ...style, margin: 0, marginTop: i > 0 ? 8 : 0 }}>
       {renderMetrics(para)}
     </p>
   ));

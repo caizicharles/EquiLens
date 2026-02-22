@@ -1,11 +1,11 @@
 import { motion } from 'framer-motion';
 import SandboxPanel from './SandboxPanel';
 import ResultsPanel from './ResultsPanel';
-import { colors } from '../style';
+import { colors, spacing } from '../style';
 
 const SANDBOX_FRACTION = 0.33;
 const RESULTS_FRACTION = 0.67;
-const PADDING = 32;
+const PADDING = spacing.xl;
 
 export default function ResultsLayout() {
   return (
@@ -27,7 +27,7 @@ export default function ResultsLayout() {
           alignItems: 'center',
           justifyContent: 'center',
           flexShrink: 0,
-          padding: `${PADDING + 40}px ${PADDING}px ${PADDING}px`,
+          padding: `${PADDING + spacing.xxl}px ${PADDING}px ${PADDING}px`,
           boxSizing: 'border-box',
           borderRight: `1px solid ${colors.borderLight}`,
         }}
@@ -44,7 +44,7 @@ export default function ResultsLayout() {
           width: `${RESULTS_FRACTION * 100}%`,
           height: '100%',
           flexShrink: 0,
-          padding: PADDING,
+          padding: `${PADDING + spacing.xxl}px ${PADDING}px ${PADDING}px`,
           boxSizing: 'border-box',
         }}
       >

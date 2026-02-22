@@ -3,7 +3,7 @@ import { useAppStore } from '../store';
 import { CITY_CONFIGS, type DemographicAxis, type DiseaseSlice } from '../data/cities';
 import { MODELS } from '../data/models';
 import type { ModelId } from '../data/models';
-import { colors, typography, components, spacing, shadows } from '../style';
+import { colors, typography, components, spacing, shadows, radii } from '../style';
 
 // ---------------------------------------------------------------------------
 // Stacked horizontal bar
@@ -24,7 +24,7 @@ function StackedBar({
         display: 'flex',
         width: '100%',
         height,
-        borderRadius: 100,
+        borderRadius: radii.pill,
         overflow: 'hidden',
         opacity: disabled ? 0.35 : 1,
         transition: 'opacity 0.2s ease',
@@ -71,14 +71,14 @@ function BarLegend({
           style={{
             display: 'inline-flex',
             alignItems: 'center',
-            gap: 4,
+            gap: spacing.xs,
           }}
         >
           <div
             style={{
               width: 10,
               height: 10,
-              borderRadius: 2,
+              borderRadius: radii.sm,
               background: seg.color,
               flexShrink: 0,
             }}
@@ -171,8 +171,8 @@ function DemographicsSection({
   disabled?: boolean;
 }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: spacing.sm }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: spacing.sm }}>
         <Toggle on={enabled} onToggle={onToggle} disabled={disabled} />
         <span
           style={{
@@ -193,7 +193,7 @@ function DemographicsSection({
             { label: axis.minorityLabel, pct: axis.minorityPct, color: axis.minorityColor },
           ];
           return (
-            <div key={axis.key} style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <div key={axis.key} style={{ display: 'flex', flexDirection: 'column', gap: spacing.xs }}>
               <span
                 style={{
                   fontFamily: typography.body,
@@ -231,8 +231,8 @@ function DiseaseSection({
   disabled?: boolean;
 }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: spacing.sm }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: spacing.sm }}>
         <Toggle on={enabled} onToggle={onToggle} disabled={disabled} />
         <span
           style={{
@@ -277,7 +277,7 @@ function ModelSelector({
   disabled?: boolean;
 }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: spacing.sm }}>
       <label
         style={{
           fontFamily: typography.body,
@@ -298,8 +298,8 @@ function ModelSelector({
           fontFamily: typography.body,
           fontSize: 14,
           fontWeight: 500,
-          padding: '8px 12px',
-          borderRadius: 8,
+          padding: `${spacing.sm}px ${spacing.md}px`,
+          borderRadius: radii.md,
           border: `1px solid ${colors.border}`,
           background: colors.surface,
           color: colors.ink,
@@ -395,12 +395,13 @@ export default function SandboxPanel({ resultsMode = false }: SandboxPanelProps)
               fontFamily: typography.body,
               fontSize: 12,
               fontWeight: 500,
-              padding: '5px 14px',
-              borderRadius: 6,
+              padding: `${spacing.xs}px ${spacing.md}px`,
+              borderRadius: radii.md,
               border: `1px solid ${colors.border}`,
               background: 'transparent',
               color: colors.inkMuted,
               cursor: 'pointer',
+              transition: 'all 0.2s ease',
             }}
           >
             Back
@@ -464,8 +465,8 @@ export default function SandboxPanel({ resultsMode = false }: SandboxPanelProps)
           fontFamily: typography.body,
           fontSize: 15,
           fontWeight: 600,
-          padding: '10px 20px',
-          borderRadius: 10,
+          padding: `${spacing.sm + 2}px ${spacing.lg}px`,
+          borderRadius: radii.lg,
           border: 'none',
           background: resultsMode
             ? colors.surfaceMuted
@@ -488,7 +489,7 @@ export default function SandboxPanel({ resultsMode = false }: SandboxPanelProps)
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: 10,
+          gap: spacing.sm,
           width: '100%',
         }}
       >
@@ -516,14 +517,15 @@ export default function SandboxPanel({ resultsMode = false }: SandboxPanelProps)
             fontFamily: typography.body,
             fontWeight: 500,
             fontSize: 13,
-            padding: '7px 16px',
-            borderRadius: 8,
+            padding: `${spacing.sm}px ${spacing.md}px`,
+            borderRadius: radii.md,
             border: `1px solid ${colors.border}`,
             background: 'transparent',
             color: colors.inkMuted,
             cursor: 'pointer',
             width: '100%',
             textAlign: 'center',
+            transition: 'all 0.2s ease',
           }}
         >
           Back to Map

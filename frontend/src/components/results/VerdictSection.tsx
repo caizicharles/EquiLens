@@ -32,17 +32,17 @@ export default function VerdictSection({ city, mode }: Props) {
 
   const borderColor =
     status === 'recommended'
-      ? 'rgba(91, 140, 80, 0.2)'
+      ? `${colors.alertGreen}33`
       : status === 'conditional'
-        ? 'rgba(212, 160, 60, 0.2)'
-        : 'rgba(196, 92, 74, 0.2)';
+        ? `${colors.alertAmber}33`
+        : `${colors.alertRed}33`;
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: 0.15 }}
-      style={{ display: 'flex', flexDirection: 'column', gap: 6 }}
+      style={{ display: 'flex', flexDirection: 'column', gap: spacing.sm }}
     >
       {/* Verdict card */}
       <div
@@ -58,14 +58,14 @@ export default function VerdictSection({ city, mode }: Props) {
             display: 'flex',
             alignItems: 'center',
             gap: spacing.sm,
-            marginBottom: 4,
+            marginBottom: spacing.xs,
           }}
         >
           <span
             style={{
-              fontFamily: typography.body,
-              fontWeight: 600,
-              fontSize: 12,
+              fontFamily: typography.display,
+              fontWeight: 700,
+              fontSize: 13,
               color: colors.ink,
               flexShrink: 0,
             }}
@@ -80,7 +80,7 @@ export default function VerdictSection({ city, mode }: Props) {
               color: '#fff',
               background: badgeBg,
               borderRadius: radii.pill,
-              padding: '4px 14px',
+              padding: `${spacing.xs}px ${spacing.md}px`,
               whiteSpace: 'nowrap',
               flexShrink: 0,
             }}
@@ -105,12 +105,12 @@ export default function VerdictSection({ city, mode }: Props) {
       <div>
         <span
           style={{
-            fontFamily: typography.body,
-            fontWeight: 600,
-            fontSize: 12,
+            fontFamily: typography.display,
+            fontWeight: 700,
+            fontSize: 13,
             color: colors.ink,
             display: 'block',
-            marginBottom: 4,
+            marginBottom: spacing.xs,
           }}
         >
           Recommendation

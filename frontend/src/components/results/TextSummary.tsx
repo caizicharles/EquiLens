@@ -33,12 +33,12 @@ export default function TextSummary({ city, isCompare = false, mode }: Props) {
     >
       <span
         style={{
-          fontFamily: typography.body,
-          fontWeight: 600,
-          fontSize: 12,
-          color: colors.ink,
+          fontFamily: typography.display,
+          fontWeight: 700,
+          fontSize: 13,
+          color: colors.green500,
           display: 'block',
-          marginBottom: 4,
+          marginBottom: spacing.xs,
         }}
       >
         Summary

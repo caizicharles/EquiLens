@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { MEDMCQA_RESULTS, ALL_CITIES, CITY_LABELS } from '../../data/results';
-import { colors, typography, radii } from '../../style';
+import { colors, typography, radii, spacing } from '../../style';
 
 const CITY_HEADER_COLORS: Record<string, string> = {
   london: colors.green400,
@@ -60,7 +60,7 @@ interface Props {
 export default function CrossCityTable({ compact = false }: Props) {
   const rows = buildRows();
   const fs = compact ? 10 : 12;
-  const pad = compact ? '4px 6px' : '7px 10px';
+  const pad = compact ? `${spacing.xs}px ${spacing.sm}px` : `${spacing.sm}px ${spacing.sm + 2}px`;
 
   const thStyle: React.CSSProperties = {
     fontFamily: typography.body,
@@ -68,7 +68,7 @@ export default function CrossCityTable({ compact = false }: Props) {
     fontWeight: 600,
     textTransform: 'uppercase',
     letterSpacing: '0.03em',
-    padding: compact ? '4px 6px' : '8px 10px',
+    padding: compact ? `${spacing.xs}px ${spacing.sm}px` : `${spacing.sm}px ${spacing.sm + 2}px`,
     textAlign: 'right',
     background: colors.surfaceAlt,
   };
@@ -116,7 +116,12 @@ export default function CrossCityTable({ compact = false }: Props) {
                     fontSize: compact ? (row.bold ? 10 : 9) : (row.bold ? 12 : 11),
                     color: colors.ink,
                     padding: pad,
+                    maxWidth: compact ? 100 : 140,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
                   }}
+                  title={row.label}
                 >
                   {row.label}
                 </td>

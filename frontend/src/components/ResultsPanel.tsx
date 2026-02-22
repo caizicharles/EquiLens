@@ -67,7 +67,7 @@ function LoadingOverlay({ modelLabel }: { modelLabel: string }) {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 20,
+        gap: spacing.lg,
         padding: spacing.xxl,
       }}
     >
@@ -76,7 +76,7 @@ function LoadingOverlay({ modelLabel }: { modelLabel: string }) {
           width: '100%',
           maxWidth: 280,
           height: 6,
-          borderRadius: 3,
+          borderRadius: radii.sm,
           background: colors.surfaceMuted,
           overflow: 'hidden',
         }}
@@ -84,7 +84,7 @@ function LoadingOverlay({ modelLabel }: { modelLabel: string }) {
         <motion.div
           style={{
             height: '100%',
-            borderRadius: 3,
+            borderRadius: radii.sm,
             background: colors.green400,
             width: `${progress * 100}%`,
           }}
@@ -132,13 +132,14 @@ function TabButton({
         fontFamily: typography.body,
         fontSize: 12,
         fontWeight: active ? 600 : 400,
-        padding: '5px 12px',
+        padding: `${spacing.xs}px ${spacing.md}px`,
         borderRadius: radii.pill,
-        border: active ? 'none' : `1px solid ${colors.borderLight}`,
+        border: active ? '1px solid transparent' : `1px solid ${colors.borderLight}`,
         background: active ? colors.green400 : 'transparent',
         color: active ? '#fff' : colors.inkMuted,
         cursor: 'pointer',
-        transition: 'background 0.2s ease, color 0.2s ease',
+        transition: 'all 0.2s ease',
+        whiteSpace: 'nowrap' as const,
       }}
     >
       {label}
@@ -212,7 +213,7 @@ export default function ResultsPanel() {
             fontFamily: typography.body,
             fontWeight: 600,
             fontSize: 10,
-            padding: '2px 8px',
+            padding: `2px ${spacing.sm}px`,
           }}
         >
           {city.label}
@@ -225,7 +226,7 @@ export default function ResultsPanel() {
             fontFamily: typography.mono,
             fontWeight: 500,
             fontSize: 9,
-            padding: '2px 8px',
+            padding: `2px ${spacing.sm}px`,
           }}
         >
           {modelLabel}
@@ -242,8 +243,8 @@ export default function ResultsPanel() {
               display: 'flex',
               background: colors.surfaceAlt,
               borderRadius: radii.pill,
-              padding: 2,
-              gap: 2,
+              padding: spacing.xs,
+              gap: spacing.xs,
             }}
           >
             <TabButton
@@ -278,7 +279,8 @@ export default function ResultsPanel() {
               flexDirection: 'column',
               padding: spacing.sm,
               minHeight: 0,
-              overflow: 'hidden',
+              overflowY: 'auto',
+              overflowX: 'hidden',
             }}
           >
             {activeTab === 'city' ? (

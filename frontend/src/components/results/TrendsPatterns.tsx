@@ -34,12 +34,12 @@ export default function TrendsPatterns({ city, isCompare = false, mode }: Props)
     >
       <span
         style={{
-          fontFamily: typography.body,
-          fontWeight: 600,
-          fontSize: 12,
+          fontFamily: typography.display,
+          fontWeight: 700,
+          fontSize: 13,
           color: colors.green600,
           display: 'block',
-          marginBottom: 4,
+          marginBottom: spacing.xs,
         }}
       >
         Findings
