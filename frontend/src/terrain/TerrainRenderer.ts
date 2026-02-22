@@ -1,9 +1,14 @@
 import { latLngToPixel } from './projection';
-import { GREAT_BRITAIN, IRELAND, ISLE_OF_MAN } from './coastlines';
+import {
+  GREAT_BRITAIN,
+  IRELAND,
+  ISLE_OF_MAN,
+  catmullRomSmooth,
+} from './coastlines';
 import { SimplexNoise } from './noise';
 
 // ---------------------------------------------------------------------------
-// Terrain color stops (lowland green → highland grey)
+// Terrain color stops — ALL GREEN, light pastel → dark rich green
 // ---------------------------------------------------------------------------
 interface RGB {
   r: number;
@@ -12,12 +17,14 @@ interface RGB {
 }
 
 const TERRAIN_STOPS: { t: number; color: RGB }[] = [
-  { t: 0.0, color: { r: 198, g: 222, b: 172 } },   // lowland fresh green
-  { t: 0.3, color: { r: 185, g: 212, b: 156 } },   // lowland deeper green
-  { t: 0.5, color: { r: 172, g: 200, b: 144 } },   // rolling hills green
-  { t: 0.7, color: { r: 190, g: 196, b: 168 } },   // upland sage-grey
-  { t: 0.85, color: { r: 205, g: 208, b: 196 } },  // mountain muted sage
-  { t: 1.0, color: { r: 218, g: 218, b: 212 } },   // peak light grey
+  { t: 0.0, color: { r: 186, g: 228, b: 134 } },   // bright fresh pastel green
+  { t: 0.15, color: { r: 172, g: 216, b: 120 } },   // vibrant medium green
+  { t: 0.30, color: { r: 152, g: 204, b: 108 } },   // deeper green
+  { t: 0.45, color: { r: 132, g: 188, b: 96 } },    // rich green
+  { t: 0.60, color: { r: 112, g: 172, b: 84 } },    // strong deep green
+  { t: 0.75, color: { r: 92, g: 156, b: 72 } },     // dark forest green
+  { t: 0.85, color: { r: 76, g: 140, b: 64 } },     // deep emerald green
+  { t: 1.0, color: { r: 64, g: 124, b: 56 } },      // darkest green (peaks)
 ];
 
 function sampleTerrainColor(t: number): RGB {
@@ -39,7 +46,7 @@ function sampleTerrainColor(t: number): RGB {
 }
 
 // ---------------------------------------------------------------------------
-// Elevation zones — approximate real UK geography
+// Elevation zones — reduced amplitudes so most land stays in lowland range
 // ---------------------------------------------------------------------------
 interface ElevationZone {
   lat: number;
@@ -51,31 +58,31 @@ interface ElevationZone {
 
 const ELEVATION_ZONES: ElevationZone[] = [
   // Scottish Highlands
-  { lat: 57.2, lng: -5.0, boost: 0.35, sigmaLat: 1.2, sigmaLng: 1.0 },
+  { lat: 57.2, lng: -5.0, boost: 0.20, sigmaLat: 1.2, sigmaLng: 1.0 },
   // Cairngorms / Grampians
-  { lat: 56.9, lng: -3.7, boost: 0.3, sigmaLat: 0.6, sigmaLng: 0.8 },
+  { lat: 56.9, lng: -3.7, boost: 0.18, sigmaLat: 0.6, sigmaLng: 0.8 },
   // Southern Uplands
-  { lat: 55.4, lng: -3.5, boost: 0.12, sigmaLat: 0.5, sigmaLng: 1.0 },
+  { lat: 55.4, lng: -3.5, boost: 0.07, sigmaLat: 0.5, sigmaLng: 1.0 },
   // Lake District
-  { lat: 54.5, lng: -3.1, boost: 0.18, sigmaLat: 0.25, sigmaLng: 0.3 },
+  { lat: 54.5, lng: -3.1, boost: 0.10, sigmaLat: 0.25, sigmaLng: 0.3 },
   // Pennines
-  { lat: 54.2, lng: -2.2, boost: 0.1, sigmaLat: 1.0, sigmaLng: 0.3 },
+  { lat: 54.2, lng: -2.2, boost: 0.06, sigmaLat: 1.0, sigmaLng: 0.3 },
   // Snowdonia
-  { lat: 53.05, lng: -3.9, boost: 0.15, sigmaLat: 0.2, sigmaLng: 0.25 },
+  { lat: 53.05, lng: -3.9, boost: 0.08, sigmaLat: 0.2, sigmaLng: 0.25 },
   // Welsh hills
-  { lat: 52.2, lng: -3.5, boost: 0.08, sigmaLat: 0.6, sigmaLng: 0.5 },
+  { lat: 52.2, lng: -3.5, boost: 0.04, sigmaLat: 0.6, sigmaLng: 0.5 },
   // Dartmoor / Exmoor
-  { lat: 50.65, lng: -3.8, boost: 0.07, sigmaLat: 0.2, sigmaLng: 0.4 },
+  { lat: 50.65, lng: -3.8, boost: 0.04, sigmaLat: 0.2, sigmaLng: 0.4 },
   // Wicklow Mountains (Ireland)
-  { lat: 53.0, lng: -6.3, boost: 0.12, sigmaLat: 0.3, sigmaLng: 0.3 },
+  { lat: 53.0, lng: -6.3, boost: 0.06, sigmaLat: 0.3, sigmaLng: 0.3 },
   // Connemara / West Ireland
-  { lat: 53.5, lng: -9.8, boost: 0.08, sigmaLat: 0.4, sigmaLng: 0.3 },
+  { lat: 53.5, lng: -9.8, boost: 0.04, sigmaLat: 0.4, sigmaLng: 0.3 },
   // Kerry Mountains (Ireland)
-  { lat: 51.85, lng: -9.8, boost: 0.1, sigmaLat: 0.25, sigmaLng: 0.3 },
+  { lat: 51.85, lng: -9.8, boost: 0.06, sigmaLat: 0.25, sigmaLng: 0.3 },
   // Donegal Highlands
-  { lat: 54.9, lng: -7.9, boost: 0.1, sigmaLat: 0.3, sigmaLng: 0.4 },
+  { lat: 54.9, lng: -7.9, boost: 0.05, sigmaLat: 0.3, sigmaLng: 0.4 },
   // Mourne Mountains
-  { lat: 54.15, lng: -5.95, boost: 0.1, sigmaLat: 0.15, sigmaLng: 0.2 },
+  { lat: 54.15, lng: -5.95, boost: 0.05, sigmaLat: 0.15, sigmaLng: 0.2 },
 ];
 
 function computeElevationBoost(lat: number, lng: number): number {
@@ -89,8 +96,14 @@ function computeElevationBoost(lat: number, lng: number): number {
 }
 
 // ---------------------------------------------------------------------------
-// Polygon helpers
+// Polygon helpers — now using smoothed coastlines
 // ---------------------------------------------------------------------------
+
+// Pre-smooth all coastlines once
+const SMOOTH_GB = catmullRomSmooth(GREAT_BRITAIN, 10);
+const SMOOTH_IE = catmullRomSmooth(IRELAND, 10);
+const SMOOTH_IOM = catmullRomSmooth(ISLE_OF_MAN, 8);
+
 function polygonToPixels(
   polygon: [number, number][],
   w: number,
@@ -139,16 +152,16 @@ export class TerrainRenderer {
     // --- Layer 1: Clear canvas (transparent — heroWash gradient shows through) ---
     ctx.clearRect(0, 0, w, h);
 
-    // --- Build land mask on offscreen canvas ---
+    // --- Build land mask on offscreen canvas using smoothed polygons ---
     const maskCanvas = document.createElement('canvas');
     maskCanvas.width = w;
     maskCanvas.height = h;
     const maskCtx = maskCanvas.getContext('2d')!;
 
     const landMasses = [
-      { poly: GREAT_BRITAIN, id: 1 },
-      { poly: IRELAND, id: 2 },
-      { poly: ISLE_OF_MAN, id: 3 },
+      { poly: SMOOTH_GB, id: 1 },
+      { poly: SMOOTH_IE, id: 2 },
+      { poly: SMOOTH_IOM, id: 3 },
     ];
 
     // Fill each land mass with a unique red channel value
@@ -181,16 +194,16 @@ export class TerrainRenderer {
         }
 
         // Convert pixel back to approximate lat/lng for elevation zones
-        const lat = 59.0 - (py / h) * 9.5; // maxLat - (py/h) * (maxLat - minLat)
-        const lng = -10.5 + (px / w) * 13.0; // minLng + (px/w) * (maxLng - minLng)
+        const lat = 59.0 - (py / h) * 9.5;
+        const lng = -10.5 + (px / w) * 13.0;
 
-        // Primary noise
+        // Primary noise — scaled down so noise adds subtle texture, not big swings
         const n1 = noise1.fbm(px * noiseScale, py * noiseScale, 3, 2.0, 0.5);
         // Secondary noise at different frequency
         const n2 = noise2.fbm(px * noiseScale2, py * noiseScale2, 3, 2.0, 0.5);
 
-        // Combine: primary 70%, secondary 30%, shift to 0-1 range
-        let elev = (n1 * 0.7 + n2 * 0.3) * 0.5 + 0.35;
+        // Combine: scale noise way down (×0.25) so base sits in lowland green range
+        let elev = (n1 * 0.7 + n2 * 0.3) * 0.25 + 0.18;
 
         // Add geographic elevation zones
         elev += computeElevationBoost(lat, lng);
@@ -219,7 +232,7 @@ export class TerrainRenderer {
         const elev = elevation[idx];
         const color = sampleTerrainColor(elev);
 
-        // Compute hillshade via finite-difference gradient
+        // Compute hillshade via finite-difference gradient — tight range to stay green
         let shade = 1.0;
         if (px > 0 && px < w - 1 && py > 0 && py < h - 1) {
           const eL = elevation[idx - 1] >= 0 ? elevation[idx - 1] : elev;
@@ -232,8 +245,8 @@ export class TerrainRenderer {
 
           // Dot product with light direction
           const dot = -(dx * lx + dy * ly);
-          shade = 1.0 + dot * 0.25; // subtle: 0.75 to 1.25
-          shade = Math.max(0.85, Math.min(1.15, shade));
+          shade = 1.0 + dot * 0.15;
+          shade = Math.max(0.92, Math.min(1.08, shade));
         }
 
         const r = Math.max(0, Math.min(255, Math.round(color.r * shade)));
@@ -258,10 +271,10 @@ export class TerrainRenderer {
 
     ctx.putImageData(imageData, 0, 0);
 
-    // --- Layer 4: Coastline stroke ---
+    // --- Layer 4: Coastline stroke — subtle, using smoothed polygons ---
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.strokeStyle = 'rgba(100, 120, 90, 0.3)';
-    ctx.lineWidth = 1.2;
+    ctx.strokeStyle = 'rgba(90, 110, 80, 0.25)';
+    ctx.lineWidth = 1;
     ctx.lineJoin = 'round';
 
     for (const lm of landMasses) {
