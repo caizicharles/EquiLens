@@ -14,17 +14,17 @@ interface MapLabelsProps {
 // ---------------------------------------------------------------------------
 
 const COUNTRY_LABELS = [
-  { label: 'United Kingdom', lat: 54.0, lng: -1.5 },
-  { label: 'Ireland', lat: 53.5, lng: -8.0 },
-  { label: 'Isle of Man', lat: 54.15, lng: -4.5, small: true },
+  { label: 'United Kingdom', lat: 54.0, lng: -1.5, size: 16 },
+  { label: 'Ireland', lat: 53.5, lng: -8.0, size: 15 },
+  { label: 'Isle of Man', lat: 54.15, lng: -4.5, size: 10, small: true },
 ] as const;
 
 const WATER_LABELS = [
-  { label: 'North Sea', lat: 56.0, lng: 1.5, size: 11 },
-  { label: 'Irish Sea', lat: 53.8, lng: -5.0, size: 11 },
-  { label: 'Atlantic Ocean', lat: 55.0, lng: -10.0, size: 12 },
-  { label: 'English Channel', lat: 50.2, lng: -2.0, size: 10 },
-  { label: 'Celtic Sea', lat: 51.0, lng: -7.5, size: 10 },
+  { label: 'North Sea', lat: 56.0, lng: 1.5, size: 13 },
+  { label: 'Irish Sea', lat: 53.8, lng: -5.0, size: 12 },
+  { label: 'Atlantic Ocean', lat: 55.0, lng: -10.0, size: 14 },
+  { label: 'English Channel', lat: 50.2, lng: -2.0, size: 11 },
+  { label: 'Celtic Sea', lat: 51.0, lng: -7.5, size: 11 },
 ] as const;
 
 interface CityData {
@@ -33,6 +33,8 @@ interface CityData {
   lat: number;
   lng: number;
   dotColor: string;
+  glowShadow: string;
+  glowShadowHover: string;
   labelSide: 'left' | 'right';
   coord: string;
 }
@@ -44,6 +46,8 @@ const PRIMARY_CITIES: CityData[] = [
     lat: 51.505,
     lng: -0.09,
     dotColor: colors.green400,
+    glowShadow: '0 0 12px rgba(126, 191, 78, 0.5)',
+    glowShadowHover: '0 0 24px rgba(126, 191, 78, 0.7)',
     labelSide: 'right',
     coord: '51.5\u00B0N, 0.1\u00B0W',
   },
@@ -53,6 +57,8 @@ const PRIMARY_CITIES: CityData[] = [
     lat: 55.953,
     lng: -3.19,
     dotColor: colors.oceanDeep,
+    glowShadow: '0 0 12px rgba(125, 187, 216, 0.5)',
+    glowShadowHover: '0 0 24px rgba(125, 187, 216, 0.7)',
     labelSide: 'right',
     coord: '56.0\u00B0N, 3.2\u00B0W',
   },
@@ -62,6 +68,8 @@ const PRIMARY_CITIES: CityData[] = [
     lat: 53.349,
     lng: -6.26,
     dotColor: colors.gold,
+    glowShadow: '0 0 12px rgba(232, 200, 122, 0.5)',
+    glowShadowHover: '0 0 24px rgba(232, 200, 122, 0.7)',
     labelSide: 'left',
     coord: '53.3\u00B0N, 6.3\u00B0W',
   },
@@ -84,10 +92,15 @@ const PEAKS = [
 // ---------------------------------------------------------------------------
 const PULSE_KEYFRAMES = `
 @keyframes city-pulse {
-  0% { transform: scale(1); opacity: 0.6; }
-  100% { transform: scale(2.5); opacity: 0; }
+  0% { transform: scale(1); opacity: 0.4; }
+  100% { transform: scale(3); opacity: 0; }
 }
 `;
+
+// Shared text shadow for legibility
+const TEXT_SHADOW_STRONG = '0 1px 4px rgba(255, 255, 255, 0.9)';
+const TEXT_SHADOW_MEDIUM = '0 1px 3px rgba(255, 255, 255, 0.8)';
+const TEXT_SHADOW_LIGHT = '0 1px 2px rgba(255, 255, 255, 0.8)';
 
 // ---------------------------------------------------------------------------
 // Sub-components
@@ -99,7 +112,7 @@ function CityMarker({ city, width, height }: { city: CityData; width: number; he
   const setPhase = useAppStore((s) => s.setPhase);
 
   const pos = latLngToPixel(city.lat, city.lng, width, height);
-  const dotSize = hovered ? 10 : 8;
+  const dotSize = hovered ? 16 : 12;
 
   const handleClick = () => {
     selectCity(city.id);
@@ -122,19 +135,27 @@ function CityMarker({ city, width, height }: { city: CityData; width: number; he
         display: 'flex',
         flexDirection: isLeft ? 'row-reverse' : 'row',
         alignItems: 'center',
-        gap: 8,
+        gap: 10,
         cursor: 'pointer',
         zIndex: 10,
         userSelect: 'none',
       }}
     >
       {/* Dot with pulse ring */}
-      <div style={{ position: 'relative', width: dotSize, height: dotSize, flexShrink: 0 }}>
+      <div
+        style={{
+          position: 'relative',
+          width: dotSize,
+          height: dotSize,
+          flexShrink: 0,
+          transition: 'width 0.2s ease, height 0.2s ease',
+        }}
+      >
         {/* Pulse ring */}
         <div
           style={{
             position: 'absolute',
-            inset: -2,
+            inset: -3,
             borderRadius: '50%',
             border: `2px solid ${city.dotColor}`,
             animation: 'city-pulse 2s ease-out infinite',
@@ -147,10 +168,8 @@ function CityMarker({ city, width, height }: { city: CityData; width: number; he
             height: dotSize,
             borderRadius: '50%',
             background: city.dotColor,
-            border: '2px solid rgba(255,255,255,0.9)',
-            boxShadow: hovered
-              ? `0 0 16px ${city.dotColor}60`
-              : `0 0 4px ${city.dotColor}30`,
+            border: '3px solid rgba(255,255,255,0.95)',
+            boxShadow: hovered ? city.glowShadowHover : city.glowShadow,
             transition: 'all 0.2s ease',
           }}
         />
@@ -161,9 +180,10 @@ function CityMarker({ city, width, height }: { city: CityData; width: number; he
         <div
           style={{
             fontFamily: typography.body,
-            fontWeight: 600,
-            fontSize: 13,
+            fontWeight: 700,
+            fontSize: 15,
             color: hovered ? city.dotColor : colors.ink,
+            textShadow: TEXT_SHADOW_STRONG,
             transition: 'color 0.2s ease',
             lineHeight: 1.2,
             whiteSpace: 'nowrap',
@@ -174,8 +194,9 @@ function CityMarker({ city, width, height }: { city: CityData; width: number; he
         <div
           style={{
             fontFamily: typography.mono,
-            fontSize: 9,
-            color: colors.inkLight,
+            fontSize: 10,
+            color: colors.inkMuted,
+            textShadow: TEXT_SHADOW_LIGHT,
             lineHeight: 1.3,
             whiteSpace: 'nowrap',
           }}
@@ -222,9 +243,10 @@ export default function MapLabels({ width, height }: MapLabelsProps) {
               fontStyle: isSmall ? 'italic' : 'normal',
               textTransform: isSmall ? 'none' : 'uppercase',
               letterSpacing: isSmall ? '0.05em' : '0.3em',
-              fontSize: isSmall ? 10 : 14,
+              fontSize: c.size,
               color: colors.inkLight,
-              opacity: isSmall ? 0.35 : 0.4,
+              opacity: isSmall ? 0.45 : 0.6,
+              textShadow: TEXT_SHADOW_MEDIUM,
               whiteSpace: 'nowrap',
               userSelect: 'none',
             }}
@@ -235,11 +257,11 @@ export default function MapLabels({ width, height }: MapLabelsProps) {
       })}
 
       {/* Water labels */}
-      {WATER_LABELS.map((w) => {
-        const pos = latLngToPixel(w.lat, w.lng, width, height);
+      {WATER_LABELS.map((wl) => {
+        const pos = latLngToPixel(wl.lat, wl.lng, width, height);
         return (
           <div
-            key={w.label}
+            key={wl.label}
             style={{
               position: 'absolute',
               left: pos.x,
@@ -247,15 +269,16 @@ export default function MapLabels({ width, height }: MapLabelsProps) {
               transform: 'translate(-50%, -50%)',
               fontFamily: typography.body,
               fontStyle: 'italic',
-              fontSize: w.size,
+              fontSize: wl.size,
               letterSpacing: '0.15em',
               color: colors.oceanDeep,
-              opacity: 0.4,
+              opacity: 0.55,
+              textShadow: '0 1px 3px rgba(255, 255, 255, 0.7)',
               whiteSpace: 'nowrap',
               userSelect: 'none',
             }}
           >
-            {w.label}
+            {wl.label}
           </div>
         );
       })}
@@ -279,11 +302,11 @@ export default function MapLabels({ width, height }: MapLabelsProps) {
           >
             <div
               style={{
-                width: 4,
-                height: 4,
+                width: 5,
+                height: 5,
                 borderRadius: '50%',
                 background: colors.inkLight,
-                opacity: 0.4,
+                opacity: 0.5,
                 flexShrink: 0,
               }}
             />
@@ -291,8 +314,9 @@ export default function MapLabels({ width, height }: MapLabelsProps) {
               style={{
                 fontFamily: typography.body,
                 fontWeight: 400,
-                fontSize: 10,
+                fontSize: 11,
                 color: colors.inkMuted,
+                textShadow: TEXT_SHADOW_LIGHT,
                 whiteSpace: 'nowrap',
               }}
             >
@@ -318,6 +342,7 @@ export default function MapLabels({ width, height }: MapLabelsProps) {
               gap: 3,
               opacity: 0.5,
               userSelect: 'none',
+              textShadow: TEXT_SHADOW_LIGHT,
             }}
           >
             <span style={{ fontSize: 8, color: colors.inkLight }}>&#9650;</span>
