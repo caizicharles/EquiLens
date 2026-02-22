@@ -10,7 +10,7 @@
 
 dataset: amqa
 model: gpt-5
-result_path: backend/results/amqa/gpt-5/gpt-5__temp0.1_seed0__20260222_125602.parquet
+result_path: backend/results/amqa/gpt-5/gpt-5__temp1.0_seed10__20260222_131850.parquet
 n_samples: 10
 random_seed: 42
 
