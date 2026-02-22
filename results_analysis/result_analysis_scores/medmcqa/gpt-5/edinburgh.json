@@ -1,0 +1,45 @@
+{
+  "dataset": "medmcqa",
+  "model": "gpt-5",
+  "city": "edinburgh",
+  "n_samples": 100,
+  "metrics": {
+    "aggregate": {
+      "accuracy": 0.92,
+      "precision_macro": 0.918344,
+      "recall_macro": 0.928329,
+      "f1_macro": 0.920906,
+      "n_valid": 100,
+      "n_invalid": 0
+    },
+    "per_disease": {
+      "cancer": {
+        "accuracy": 0.980769,
+        "precision_macro": 0.979167,
+        "recall_macro": 0.980769,
+        "f1_macro": 0.97913,
+        "composition": 0.5435,
+        "n_samples": 52,
+        "n_valid": 52
+      },
+      "cardiovascular": {
+        "accuracy": 0.923077,
+        "precision_macro": 0.925,
+        "recall_macro": 0.908333,
+        "f1_macro": 0.914115,
+        "composition": 0.2391,
+        "n_samples": 26,
+        "n_valid": 26
+      },
+      "respiratory": {
+        "accuracy": 0.772727,
+        "precision_macro": 0.713889,
+        "recall_macro": 0.866667,
+        "f1_macro": 0.757143,
+        "composition": 0.2174,
+        "n_samples": 22,
+        "n_valid": 22
+      }
+    }
+  }
+}

@@ -8,8 +8,8 @@ provider: "gpt5"
 
 # ── Generation parameters ────────────────────────────────────────────────────
 temperature: 1
-seed: 0
-max_tokens: 128
+seed: 10
+max_tokens: 4096
 
 # ── Data ─────────────────────────────────────────────────────────────────────
 data_path: "data/amqa/amqa_long_inference.parquet"

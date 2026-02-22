@@ -1,0 +1,45 @@
+{
+  "dataset": "medmcqa",
+  "model": "gpt-5",
+  "city": "dublin",
+  "n_samples": 100,
+  "metrics": {
+    "aggregate": {
+      "accuracy": 0.89,
+      "precision_macro": 0.88401,
+      "recall_macro": 0.881393,
+      "f1_macro": 0.879832,
+      "n_valid": 100,
+      "n_invalid": 0
+    },
+    "per_disease": {
+      "cancer": {
+        "accuracy": 0.906977,
+        "precision_macro": 0.911325,
+        "recall_macro": 0.907913,
+        "f1_macro": 0.909127,
+        "composition": 0.4247,
+        "n_samples": 43,
+        "n_valid": 43
+      },
+      "cardiovascular": {
+        "accuracy": 0.878049,
+        "precision_macro": 0.894385,
+        "recall_macro": 0.863866,
+        "f1_macro": 0.860294,
+        "composition": 0.3973,
+        "n_samples": 41,
+        "n_valid": 41
+      },
+      "respiratory": {
+        "accuracy": 0.875,
+        "precision_macro": 0.825,
+        "recall_macro": 0.901786,
+        "f1_macro": 0.833944,
+        "composition": 0.1781,
+        "n_samples": 16,
+        "n_valid": 16
+      }
+    }
+  }
+}

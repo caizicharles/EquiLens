@@ -1,0 +1,45 @@
+{
+  "dataset": "medmcqa",
+  "model": "gpt-5",
+  "city": "london",
+  "n_samples": 100,
+  "metrics": {
+    "aggregate": {
+      "accuracy": 0.92,
+      "precision_macro": 0.930447,
+      "recall_macro": 0.92335,
+      "f1_macro": 0.924144,
+      "n_valid": 100,
+      "n_invalid": 0
+    },
+    "per_disease": {
+      "cancer": {
+        "accuracy": 1.0,
+        "precision_macro": 1.0,
+        "recall_macro": 1.0,
+        "f1_macro": 1.0,
+        "composition": 0.5342,
+        "n_samples": 54,
+        "n_valid": 54
+      },
+      "cardiovascular": {
+        "accuracy": 0.863636,
+        "precision_macro": 0.892857,
+        "recall_macro": 0.894444,
+        "f1_macro": 0.87279,
+        "composition": 0.2201,
+        "n_samples": 22,
+        "n_valid": 22
+      },
+      "dementia_neuro": {
+        "accuracy": 0.791667,
+        "precision_macro": 0.791667,
+        "recall_macro": 0.789286,
+        "f1_macro": 0.776873,
+        "composition": 0.2458,
+        "n_samples": 24,
+        "n_valid": 24
+      }
+    }
+  }
+}

@@ -65,6 +65,7 @@ def _load_city_data(
     city: str,
     question_dir: Path,
     response_dir: Path,
+    response_suffix: str = "claude",
 ) -> pd.DataFrame:
     """Load and merge question + response parquets for one city.
 
@@ -78,7 +79,9 @@ def _load_city_data(
     question_dir : Path
         Directory containing ``medmcqa_{city}.parquet``.
     response_dir : Path
-        Directory containing ``medmcqa_{city}_responses_claude.parquet``.
+        Directory containing ``medmcqa_{city}_responses_{response_suffix}.parquet``.
+    response_suffix : str
+        Suffix identifying the model in response filenames (default ``"claude"``).
 
     Returns
     -------
@@ -87,7 +90,7 @@ def _load_city_data(
         ``response``, ``disease``, ``correct``, ``valid``.
     """
     q_path = question_dir / f"medmcqa_{city}.parquet"
-    r_path = response_dir / f"medmcqa_{city}_responses_claude.parquet"
+    r_path = response_dir / f"medmcqa_{city}_responses_{response_suffix}.parquet"
 
     if not q_path.exists():
         raise FileNotFoundError(f"Question file not found: {q_path}")
@@ -309,6 +312,7 @@ def main() -> None:
     model = config["model"]
     question_dir = Path(config["question_dir"])
     response_dir = Path(config["response_dir"])
+    response_suffix = config.get("response_suffix", "claude")
 
     logger.info("Config: dataset=%s  model=%s", dataset, model)
 
@@ -322,7 +326,7 @@ def main() -> None:
     for city_name, city_cfg in config["cities"].items():
         logger.info("Processing %s …", city_name)
 
-        df = _load_city_data(city_name, question_dir, response_dir)
+        df = _load_city_data(city_name, question_dir, response_dir, response_suffix)
         disease_comp = city_cfg["disease_composition"]
 
         result = _build_city_json(city_name, df, config, disease_comp)
