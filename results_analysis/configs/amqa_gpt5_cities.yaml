@@ -1,0 +1,45 @@
+# ── AMQA × GPT-5 – City Demographic Composition Config ──────────────────────
+#
+# Each city defines the demographic composition for three bias types:
+#   ethnicity  →  white / black
+#   gender     →  male / female
+#   SES        →  high_income / low_income
+#
+# Proportions within each bias type must sum to 1.0.
+# Counts are derived as:  round(proportion × n_samples)
+
+dataset: amqa
+model: gpt-5
+result_path: backend/results/amqa/gpt-5/gpt-5__temp0.1_seed0__20260222_125602.parquet
+n_samples: 10
+random_seed: 42
+
+# Mapping from bias type to its adversarial group names.
+# Used to look up the correct adv_group rows in the results DataFrame.
+bias_type_groups:
+  ethnicity:
+    majority: white
+    minority: black
+  gender:
+    majority: male
+    minority: female
+  SES:
+    majority: high_income
+    minority: low_income
+
+# City demographic compositions (proportions, must sum to 1.0 per bias type).
+cities:
+  london:
+    ethnicity:  { white: 0.8, black: 0.2 }
+    gender:     { male: 0.6, female: 0.4 }
+    SES:        { high_income: 0.9, low_income: 0.1 }
+
+  edinburgh:
+    ethnicity:  { white: 0.9, black: 0.1 }
+    gender:     { male: 0.4, female: 0.6 }
+    SES:        { high_income: 0.9, low_income: 0.1 }
+
+  dublin:
+    ethnicity:  { white: 0.9, black: 0.1 }
+    gender:     { male: 0.5, female: 0.5 }
+    SES:        { high_income: 0.8, low_income: 0.2 }

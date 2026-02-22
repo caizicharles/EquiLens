@@ -92,10 +92,9 @@ def build_batch_requests(
                     {"role": "system", "content": SYSTEM_PROMPT},
                     {"role": "user", "content": row["prompt"]},
                 ],
-                "temperature": 0.0,
                 "seed": 42,
                 "max_completion_tokens": 64,
-                "reasoning": {"effort": "low"},
+                "reasoning_effort": "low",
                 "response_format": {
                     "type": "json_schema",
                     "json_schema": {

@@ -92,10 +92,9 @@ class GPT5Provider(LLMProvider):
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": user_content},
                     ],
-                    "temperature": config.temperature,
                     "seed": config.seed,
                     "max_completion_tokens": config.max_tokens,
-                    "reasoning": {"effort": "low"},
+                    "reasoning_effort": "low",
                     "response_format": {
                         "type": "json_schema",
                         "json_schema": {
@@ -176,6 +175,11 @@ class GPT5Provider(LLMProvider):
                     raise RuntimeError(
                         f"Batch {batch_id} ended with status '{batch.status}'."
                     )
+                if counts.completed == 0 and counts.failed > 0:
+                    logger.warning(
+                        "All %d requests failed. Check error file for details.",
+                        counts.failed,
+                    )
                 return
             logger.info(
                 "  status: %s | completed: %d / %d",
@@ -197,7 +201,17 @@ class GPT5Provider(LLMProvider):
         """
         batch = self._client.batches.retrieve(batch_id)
         if not batch.output_file_id:
-            logger.error("Batch %s has no output file.", batch_id)
+            if batch.error_file_id:
+                error_content = self._client.files.content(
+                    batch.error_file_id
+                )
+                for line in error_content.text.strip().split("\n"):
+                    if line:
+                        logger.error("Batch error entry: %s", line)
+            else:
+                logger.error(
+                    "Batch %s has no output or error file.", batch_id
+                )
             return {}
 
         content = self._client.files.content(batch.output_file_id)
@@ -214,14 +228,49 @@ class GPT5Provider(LLMProvider):
             if status_code == 200:
                 try:
                     body = response_body["body"]
-                    message_content = body["choices"][0]["message"]["content"]
+                    choice = body["choices"][0]
+                    finish_reason = choice.get("finish_reason", "unknown")
+                    message_content = choice["message"]["content"]
+
+                    if finish_reason == "length":
+                        logger.warning(
+                            "Token limit reached for %s "
+                            "(finish_reason='length', content=%r). "
+                            "Increase max_tokens in config.",
+                            cid,
+                            (message_content or "")[:100],
+                        )
+                        result_map[cid] = {
+                            "response": None,
+                            "result_status": "token_limit",
+                        }
+                        continue
+
+                    if not message_content:
+                        logger.warning(
+                            "Empty content for %s "
+                            "(finish_reason=%s).",
+                            cid,
+                            finish_reason,
+                        )
+                        result_map[cid] = {
+                            "response": None,
+                            "result_status": "empty_content",
+                        }
+                        continue
+
                     parsed = MCQResponse.model_validate_json(message_content)
                     result_map[cid] = {
                         "response": parsed.answer,
                         "result_status": "succeeded",
                     }
                 except Exception as exc:
-                    logger.warning("Parse error for %s: %s", cid, exc)
+                    logger.warning(
+                        "Parse error for %s: %s (content=%r)",
+                        cid,
+                        exc,
+                        (message_content or "")[:200],
+                    )
                     result_map[cid] = {
                         "response": None,
                         "result_status": "parse_error",

@@ -66,7 +66,7 @@ const PRIMARY_CITIES: CityData[] = [
     id: 'dublin',
     label: 'Dublin',
     lat: 53.35,
-    lng: -6.08,
+    lng: -6.26,
     dotColor: colors.gold,
     glowShadow: '0 0 14px rgba(232, 200, 122, 0.6)',
     glowShadowHover: '0 0 28px rgba(232, 200, 122, 0.8)',
@@ -125,89 +125,94 @@ function CityMarker({ city, width, height }: { city: CityData; width: number; he
   const isLeft = city.labelSide === 'left';
 
   return (
-    <motion.div
-      onClick={handleClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      whileTap={{ scale: 1.15 }}
+    <div
       style={{
         position: 'absolute',
         left: pos.x,
         top: pos.y,
         transform: 'translate(-50%, -50%)',
-        display: 'flex',
-        flexDirection: isLeft ? 'row-reverse' : 'row',
-        alignItems: 'center',
-        gap: 10,
-        cursor: 'pointer',
         zIndex: 10,
-        userSelect: 'none',
       }}
     >
-      {/* Dot with pulse ring */}
-      <div
+      <motion.div
+        onClick={handleClick}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        whileTap={{ scale: 1.15 }}
         style={{
-          position: 'relative',
-          width: dotSize,
-          height: dotSize,
-          flexShrink: 0,
-          transition: 'width 0.2s ease, height 0.2s ease',
+          display: 'flex',
+          flexDirection: isLeft ? 'row-reverse' : 'row',
+          alignItems: 'center',
+          gap: 10,
+          cursor: 'pointer',
+          userSelect: 'none',
         }}
       >
-        {/* Pulse ring */}
+        {/* Dot with pulse ring */}
         <div
           style={{
-            position: 'absolute',
-            inset: -4,
-            borderRadius: '50%',
-            border: `2px solid ${city.dotColor}`,
-            animation: 'city-pulse 2s ease-out infinite',
-          }}
-        />
-        {/* Dot */}
-        <div
-          style={{
+            position: 'relative',
             width: dotSize,
             height: dotSize,
-            borderRadius: '50%',
-            background: city.dotColor,
-            border: '3px solid rgba(255,255,255,0.95)',
-            boxShadow: hovered ? city.glowShadowHover : city.glowShadow,
-            transition: 'all 0.2s ease',
+            flexShrink: 0,
+            transition: 'width 0.2s ease, height 0.2s ease',
           }}
-        />
-      </div>
+        >
+          {/* Pulse ring */}
+          <div
+            style={{
+              position: 'absolute',
+              inset: -4,
+              borderRadius: '50%',
+              border: `2px solid ${city.dotColor}`,
+              animation: 'city-pulse 2s ease-out infinite',
+            }}
+          />
+          {/* Dot */}
+          <div
+            style={{
+              width: dotSize,
+              height: dotSize,
+              borderRadius: '50%',
+              background: city.dotColor,
+              border: '3px solid rgba(255,255,255,0.95)',
+              boxShadow: hovered ? city.glowShadowHover : city.glowShadow,
+              transition: 'all 0.2s ease',
+            }}
+          />
+        </div>
 
-      {/* Label */}
-      <div style={{ textAlign: isLeft ? 'right' : 'left' }}>
-        <div
-          style={{
-            fontFamily: typography.body,
-            fontWeight: 800,
-            fontSize: 16,
-            color: hovered ? city.dotColor : colors.ink,
-            textShadow: TEXT_SHADOW_STRONG,
-            transition: 'color 0.2s ease',
-            lineHeight: 1.2,
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {city.label}
+        {/* Label */}
+        <div style={{ textAlign: isLeft ? 'right' : 'left' }}>
+          <div
+            style={{
+              fontFamily: typography.body,
+              fontWeight: 800,
+              fontSize: 16,
+              color: hovered ? city.dotColor : colors.ink,
+              textShadow: TEXT_SHADOW_STRONG,
+              transition: 'color 0.2s ease',
+              lineHeight: 1.2,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {city.label}
+          </div>
+          <div
+            style={{
+              fontFamily: typography.mono,
+              fontSize: 10,
+              color: colors.inkMuted,
+              textShadow: TEXT_SHADOW_LIGHT,
+              lineHeight: 1.3,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {city.coord}
+          </div>
         </div>
-        <div
-          style={{
-            fontFamily: typography.mono,
-            fontSize: 10,
-            color: colors.inkMuted,
-            textShadow: TEXT_SHADOW_LIGHT,
-            lineHeight: 1.3,
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {city.coord}
-        </div>
-      </div>
-    </motion.div>
+      </motion.div>
+    </div>
   );
 }
 
@@ -220,7 +225,8 @@ export default function MapLabels({ width, height }: MapLabelsProps) {
     <div
       style={{
         position: 'absolute',
-        inset: 0,
+        top: 0,
+        left: 0,
         width,
         height,
         pointerEvents: 'none',

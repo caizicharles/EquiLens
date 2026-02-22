@@ -356,7 +356,7 @@ export default function SandboxPanel({ resultsMode = false }: SandboxPanelProps)
 
   const handleBack = () => {
     resetSandbox();
-    selectCity(null as never);
+    selectCity(null);
     setPhase('map');
   };
 
