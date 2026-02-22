@@ -1,20 +1,24 @@
 import { motion } from 'framer-motion';
 import type { City } from '../../store';
+import type { AnalysisMode } from '../../data/analysis';
 import { AMQA_RESULTS, MEDMCQA_RESULTS } from '../../data/results';
 import AccuracyRatioChart from './AccuracyRatioChart';
 import ConsistencyGauge from './ConsistencyGauge';
 import AggregateCards from './AggregateCards';
 import DiseaseAccuracyChart from './DiseaseAccuracyChart';
 import TextSummary from './TextSummary';
+import TrendsPatterns from './TrendsPatterns';
+import VerdictSection from './VerdictSection';
 import { colors, typography, spacing } from '../../style';
 
 interface Props {
   city: City;
   enabledDemographics: boolean;
   enabledDisease: boolean;
+  mode: AnalysisMode;
 }
 
-export default function CityResultsTab({ city, enabledDemographics, enabledDisease }: Props) {
+export default function CityResultsTab({ city, enabledDemographics, enabledDisease, mode }: Props) {
   const amqa = AMQA_RESULTS[city];
   const medmcqa = MEDMCQA_RESULTS[city];
 
@@ -37,7 +41,7 @@ export default function CityResultsTab({ city, enabledDemographics, enabledDisea
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: spacing.sm, height: '100%' }}>
       {/* Text Summary */}
-      <TextSummary city={city} />
+      <TextSummary city={city} mode={mode} />
 
       {/* Charts section */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: spacing.sm, minHeight: 0 }}>
@@ -79,6 +83,12 @@ export default function CityResultsTab({ city, enabledDemographics, enabledDisea
           </motion.div>
         )}
       </div>
+
+      {/* Findings */}
+      <TrendsPatterns city={city} mode={mode} />
+
+      {/* Verdict + Recommendation */}
+      <VerdictSection city={city} mode={mode} />
     </div>
   );
 }

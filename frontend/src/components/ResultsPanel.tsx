@@ -3,10 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAppStore } from '../store';
 import { CITY_CONFIGS } from '../data/cities';
 import { MODELS } from '../data/models';
+import { computeMode } from '../data/analysis';
 import CityResultsTab from './results/CityResultsTab';
 import CompareAllTab from './results/CompareAllTab';
-import TrendsPatterns from './results/TrendsPatterns';
-import VerdictSection from './results/VerdictSection';
 import { colors, typography, components, spacing, radii } from '../style';
 
 type Tab = 'city' | 'compare';
@@ -166,6 +165,7 @@ export default function ResultsPanel() {
   const model = MODELS.find((m) => m.id === selectedModel);
   const badgeColors = components[city.badgeStyle] as { background: string; color: string };
   const modelLabel = model?.label ?? selectedModel;
+  const mode = computeMode(enabledDemographics, enabledDisease);
 
   return (
     <motion.div
@@ -192,7 +192,6 @@ export default function ResultsPanel() {
           borderBottom: `1px solid ${colors.borderLight}`,
         }}
       >
-        {/* Title */}
         <h2
           style={{
             fontFamily: typography.display,
@@ -206,7 +205,6 @@ export default function ResultsPanel() {
           Results
         </h2>
 
-        {/* Badges inline */}
         <span
           style={{
             ...components.badge,
@@ -233,10 +231,8 @@ export default function ResultsPanel() {
           {modelLabel}
         </span>
 
-        {/* Spacer */}
         <div style={{ flex: 1 }} />
 
-        {/* Tab bar inline */}
         {attackComplete && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -281,29 +277,20 @@ export default function ResultsPanel() {
               display: 'flex',
               flexDirection: 'column',
               padding: spacing.sm,
-              gap: spacing.sm,
               minHeight: 0,
               overflow: 'hidden',
             }}
           >
-            {/* Charts section — ~50% */}
-            <div style={{ flex: 1, minHeight: 0 }}>
-              {activeTab === 'city' ? (
-                <CityResultsTab
-                  city={selectedCity}
-                  enabledDemographics={enabledDemographics}
-                  enabledDisease={enabledDisease}
-                />
-              ) : (
-                <CompareAllTab />
-              )}
-            </div>
-
-            {/* Trends & Patterns — ~15% */}
-            <TrendsPatterns />
-
-            {/* Verdict + Recommendation — ~15% */}
-            <VerdictSection />
+            {activeTab === 'city' ? (
+              <CityResultsTab
+                city={selectedCity}
+                enabledDemographics={enabledDemographics}
+                enabledDisease={enabledDisease}
+                mode={mode}
+              />
+            ) : (
+              <CompareAllTab mode={mode} />
+            )}
           </motion.div>
         )}
       </AnimatePresence>

@@ -1,14 +1,20 @@
 import { motion } from 'framer-motion';
+import type { AnalysisMode } from '../../data/analysis';
 import CrossCityBars from './CrossCityBars';
 import CrossCityTable from './CrossCityTable';
 import TextSummary from './TextSummary';
+import TrendsPatterns from './TrendsPatterns';
 import { spacing } from '../../style';
 
-export default function CompareAllTab() {
+interface Props {
+  mode: AnalysisMode;
+}
+
+export default function CompareAllTab({ mode }: Props) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: spacing.sm, height: '100%' }}>
       {/* Text Summary */}
-      <TextSummary isCompare />
+      <TextSummary isCompare mode={mode} />
 
       {/* Charts section */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: spacing.sm, minHeight: 0 }}>
@@ -37,6 +43,9 @@ export default function CompareAllTab() {
           <CrossCityTable compact />
         </motion.div>
       </div>
+
+      {/* Findings (no verdict for cross-city) */}
+      <TrendsPatterns isCompare mode={mode} />
     </div>
   );
 }

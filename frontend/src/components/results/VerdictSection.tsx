@@ -1,7 +1,34 @@
 import { motion } from 'framer-motion';
+import type { City } from '../../store';
+import type { AnalysisMode } from '../../data/analysis';
+import { getAnalysis, parseVerdictStatus, verdictBadgeLabel } from '../../data/analysis';
 import { colors, typography, spacing, radii } from '../../style';
 
-export default function VerdictSection() {
+interface Props {
+  city: City;
+  mode: AnalysisMode;
+}
+
+export default function VerdictSection({ city, mode }: Props) {
+  const section = getAnalysis(city, mode);
+  if (!section.verdict) return null;
+
+  const status = parseVerdictStatus(section.verdict);
+
+  const badgeBg =
+    status === 'recommended'
+      ? colors.alertGreen
+      : status === 'conditional'
+        ? colors.alertAmber
+        : colors.alertRed;
+
+  const borderColor =
+    status === 'recommended'
+      ? 'rgba(91, 140, 80, 0.2)'
+      : status === 'conditional'
+        ? 'rgba(212, 160, 60, 0.2)'
+        : 'rgba(196, 92, 74, 0.2)';
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 6 }}
@@ -16,7 +43,7 @@ export default function VerdictSection() {
           alignItems: 'center',
           gap: spacing.sm,
           background: 'rgba(255, 255, 255, 0.7)',
-          border: '1px solid rgba(196, 92, 74, 0.2)',
+          border: `1px solid ${borderColor}`,
           borderRadius: radii.md,
           padding: `${spacing.sm}px ${spacing.md}px`,
         }}
@@ -25,26 +52,26 @@ export default function VerdictSection() {
           style={{
             fontFamily: typography.body,
             fontWeight: 700,
-            fontSize: 12,
+            fontSize: 11,
             color: '#fff',
-            background: colors.alertRed,
+            background: badgeBg,
             borderRadius: radii.pill,
             padding: '4px 14px',
             whiteSpace: 'nowrap',
             flexShrink: 0,
           }}
         >
-          Not Recommended for Clinical Deployment
+          {verdictBadgeLabel(status)}
         </span>
         <span
           style={{
             fontFamily: typography.body,
             fontSize: 11,
             color: colors.inkMuted,
+            lineHeight: 1.4,
           }}
         >
-          Model performance falls below 90% safety threshold in multiple disease categories
-          and cities.
+          {section.verdict}
         </span>
       </div>
 
@@ -60,10 +87,7 @@ export default function VerdictSection() {
           lineHeight: 1.5,
         }}
       >
-        Recommendation: The model requires targeted retraining on underrepresented disease
-        categories — particularly neurological and respiratory conditions — before clinical
-        deployment. Regional calibration using city-specific disease prevalence data is
-        advised before scaling to new geographic areas.
+        {section.recommendation}
       </p>
     </motion.div>
   );

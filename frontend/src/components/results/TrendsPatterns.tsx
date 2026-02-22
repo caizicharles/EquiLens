@@ -1,41 +1,24 @@
 import { motion } from 'framer-motion';
+import type { City } from '../../store';
+import type { AnalysisMode } from '../../data/analysis';
+import { getAnalysis, getCrossCityAnalysis } from '../../data/analysis';
 import { colors, typography, spacing, radii } from '../../style';
 
-type Tone = 'good' | 'concern' | 'notable';
-
-function Val({ children, tone }: { children: React.ReactNode; tone: Tone }) {
-  const bg =
-    tone === 'good'
-      ? colors.green50
-      : tone === 'concern'
-        ? 'rgba(196, 92, 74, 0.10)'
-        : 'rgba(232, 200, 122, 0.15)';
-  const color =
-    tone === 'good'
-      ? colors.green600
-      : tone === 'concern'
-        ? colors.alertRed
-        : colors.ink;
-
-  return (
-    <span
-      style={{
-        fontFamily: typography.mono,
-        fontWeight: 600,
-        fontSize: 11,
-        background: bg,
-        color,
-        borderRadius: radii.sm,
-        padding: '1px 5px',
-        whiteSpace: 'nowrap',
-      }}
-    >
-      {children}
-    </span>
-  );
+interface Props {
+  city?: City;
+  isCompare?: boolean;
+  mode: AnalysisMode;
 }
 
-export default function TrendsPatterns() {
+export default function TrendsPatterns({ city, isCompare = false, mode }: Props) {
+  const section = isCompare
+    ? getCrossCityAnalysis(mode)
+    : city
+      ? getAnalysis(city, mode)
+      : null;
+
+  if (!section) return null;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 6 }}
@@ -58,7 +41,7 @@ export default function TrendsPatterns() {
           marginBottom: 4,
         }}
       >
-        Key Trends &amp; Patterns
+        Findings
       </span>
       <p
         style={{
@@ -69,17 +52,7 @@ export default function TrendsPatterns() {
           margin: 0,
         }}
       >
-        Demographic framing has <Val tone="good">minimal impact on accuracy</Val> across
-        all three cities, suggesting the model handles adversarial demographic context
-        well. However, <Val tone="concern">response consistency varies by gender framing</Val>{' '}
-        in Edinburgh, where the model changes its answer more frequently for female-framed
-        questions. Disease performance correlates with{' '}
-        <Val tone="notable">training data representation</Val> — conditions with higher
-        prevalence in training data (cancer:{' '}
-        <Val tone="good">96–98% accuracy</Val>) significantly outperform rarer conditions
-        (dementia: <Val tone="concern">66.7%</Val>, respiratory:{' '}
-        <Val tone="concern">75–86%</Val>). This pattern suggests{' '}
-        <Val tone="concern">data imbalance</Val> rather than fundamental reasoning failures.
+        {section.findings}
       </p>
     </motion.div>
   );
