@@ -27,7 +27,7 @@ export default function ResultsLayout() {
           alignItems: 'center',
           justifyContent: 'center',
           flexShrink: 0,
-          padding: PADDING,
+          padding: `${PADDING + 40}px ${PADDING}px ${PADDING}px`,
           boxSizing: 'border-box',
           borderRight: `1px solid ${colors.borderLight}`,
         }}
