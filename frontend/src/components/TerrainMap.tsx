@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { TerrainRenderer } from '../terrain/TerrainRenderer';
 import { BOUNDS } from '../terrain/projection';
+import MapLabels from './MapLabels';
 
 // Correct aspect ratio accounting for latitude distortion
-// At ~54° latitude, 1° longitude ≈ cos(54°) ≈ 0.588 × 1° latitude
-const LAT_RANGE = BOUNDS.maxLat - BOUNDS.minLat; // 9.5
-const LNG_RANGE = BOUNDS.maxLng - BOUNDS.minLng; // 13.0
-const MID_LAT = (BOUNDS.minLat + BOUNDS.maxLat) / 2; // ~54.25
-const COS_FACTOR = Math.cos((MID_LAT * Math.PI) / 180); // ~0.584
-const GEO_ASPECT = (LNG_RANGE * COS_FACTOR) / LAT_RANGE; // width / height ≈ 0.80
+const LAT_RANGE = BOUNDS.maxLat - BOUNDS.minLat;
+const LNG_RANGE = BOUNDS.maxLng - BOUNDS.minLng;
+const MID_LAT = (BOUNDS.minLat + BOUNDS.maxLat) / 2;
+const COS_FACTOR = Math.cos((MID_LAT * Math.PI) / 180);
+const GEO_ASPECT = (LNG_RANGE * COS_FACTOR) / LAT_RANGE;
 
 const PADDING = 48;
 
@@ -18,11 +18,9 @@ function computeSize(vpW: number, vpH: number) {
 
   let w: number, h: number;
   if (availW / availH > GEO_ASPECT) {
-    // viewport is wider than the map — constrain by height
     h = availH;
     w = h * GEO_ASPECT;
   } else {
-    // viewport is taller — constrain by width
     w = availW;
     h = w / GEO_ASPECT;
   }
@@ -77,18 +75,20 @@ export default function TerrainMap() {
         alignItems: 'center',
         justifyContent: 'center',
         zIndex: 1,
-        pointerEvents: 'none',
       }}
     >
-      <canvas
-        ref={canvasRef}
-        style={{
-          width: size.width,
-          height: size.height,
-          display: 'block',
-          pointerEvents: 'auto',
-        }}
-      />
+      {/* Shared container — canvas + labels same size and position */}
+      <div style={{ position: 'relative', width: size.width, height: size.height }}>
+        <canvas
+          ref={canvasRef}
+          style={{
+            width: size.width,
+            height: size.height,
+            display: 'block',
+          }}
+        />
+        <MapLabels width={size.width} height={size.height} />
+      </div>
     </div>
   );
 }
