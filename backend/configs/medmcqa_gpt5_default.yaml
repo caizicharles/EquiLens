@@ -1,10 +1,10 @@
-# ── MedMCQA Evaluation Config: Gemini 3.0 Flash ─────────────────────────────
+# ── MedMCQA Evaluation Config: OpenAI GPT-5 ──────────────────────────────────
 # This file fully specifies a single evaluation run.
 # A copy is saved alongside results for reproducibility.
 
 # ── Model ────────────────────────────────────────────────────────────────────
-model_name: "gemini-3.0-flash"
-provider: "gemini"
+model_name: "gpt-5"
+provider: "gpt5"
 
 # ── Generation parameters ────────────────────────────────────────────────────
 temperature: 0.1
@@ -26,6 +26,8 @@ id_columns: ["id"]
 answer_column: "answer"
 summary_groupby: ["subject_name"]
 
+# ── Provider-specific ────────────────────────────────────────────────────────
+poll_interval: 30
+
 # ── Inference set creation (used by dataset processing --inference) ───────────
 num_samples: 10                  # rows to sample for inference
-stratify_column: "topic_name"   # proportional stratified sampling by topic

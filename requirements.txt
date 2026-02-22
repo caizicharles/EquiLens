@@ -8,7 +8,7 @@ python-dotenv
 
 # ── LLM providers ───────────────────────────────────────────────────────────
 anthropic>=0.40.0
-google-genai>=1.0.0
+openai>=1.0.0
 
 # ── Dataset (HuggingFace) ───────────────────────────────────────────────────
 datasets

@@ -1,10 +1,10 @@
-# ── AMQA Evaluation Config: Gemini 3.0 Flash ────────────────────────────────
+# ── AMQA Evaluation Config: OpenAI GPT-5 ─────────────────────────────────────
 # This file fully specifies a single evaluation run.
 # A copy is saved alongside results for reproducibility.
 
 # ── Model ────────────────────────────────────────────────────────────────────
-model_name: "gemini-3.0-flash"
-provider: "gemini"
+model_name: "gpt-5"
+provider: "gpt5"
 
 # ── Generation parameters ────────────────────────────────────────────────────
 temperature: 0.1
@@ -26,6 +26,8 @@ id_columns: ["question_id", "adv_group"]
 answer_column: "answer_idx"
 summary_groupby: ["adv_group", "bias_category"]
 
+# ── Provider-specific ────────────────────────────────────────────────────────
+poll_interval: 30
+
 # ── Inference set creation (used by dataset processing --inference) ───────────
 num_samples: 10         # unique question IDs to sample = 10 pairs per bias category + matched baselines → 70 rows
-pair_column: "question_id"       # column whose unique values define counterfactual sets for paired sampling

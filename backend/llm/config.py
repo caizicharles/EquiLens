@@ -31,7 +31,7 @@ class LLMConfig(BaseModel):
 
     # Model — required
     model_name: str
-    provider: Literal["claude", "gemini"]
+    provider: Literal["claude", "gpt5"]
 
     # Generation — required
     temperature: float
@@ -68,8 +68,8 @@ class LLMConfig(BaseModel):
     # Provider-specific — genuinely optional
     poll_interval: Optional[int] = Field(
         default=None,
-        description="Seconds between Claude batch status checks. "
-        "Required for Claude provider, ignored for Gemini.",
+        description="Seconds between batch status checks. "
+        "Required for Claude and GPT-5 batch providers.",
     )
 
     @field_validator("id_columns")

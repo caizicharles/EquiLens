@@ -11,7 +11,7 @@ export interface AppStore {
   phase: Phase;
   selectedCity: City | null;
   setPhase: (phase: Phase) => void;
-  selectCity: (city: City) => void;
+  selectCity: (city: City | null) => void;
 
   // Sandbox configuration
   selectedModel: ModelId;

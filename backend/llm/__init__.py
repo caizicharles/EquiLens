@@ -7,7 +7,7 @@ from llm.provider import get_provider
 
 # Importing provider modules triggers @register_provider decorators.
 import llm.claude  # noqa: F401
-import llm.gemini  # noqa: F401
+import llm.gpt5  # noqa: F401
 
 __all__ = [
     "LLMConfig",

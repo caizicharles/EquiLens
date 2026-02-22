@@ -7,7 +7,7 @@ saves everything as a timestamped Parquet file.
 Usage
 -----
     python run_llm.py --config configs/amqa_claude_default.yaml
-    python run_llm.py --config configs/medmcqa_gemini_default.yaml --dry-run
+    python run_llm.py --config configs/medmcqa_gpt5_default.yaml --dry-run
 """
 
 from __future__ import annotations

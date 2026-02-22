@@ -12,9 +12,9 @@ equilens/
 │   ├── build_prompts.py                  # Prompt builder utility
 │   ├── configs/
 │   │   ├── amqa_claude_default.yaml      # AMQA × Claude run config
-│   │   ├── amqa_gemini_default.yaml      # AMQA × Gemini run config
+│   │   ├── amqa_gpt5_default.yaml        # AMQA × GPT-5 run config
 │   │   ├── medmcqa_claude_default.yaml   # MedMCQA × Claude run config
-│   │   └── medmcqa_gemini_default.yaml   # MedMCQA × Gemini run config
+│   │   └── medmcqa_gpt5_default.yaml     # MedMCQA × GPT-5 run config
 │   ├── data/
 │   │   ├── amqa/
 │   │   │   ├── amqa.parquet              # Wide-format (one row per question)
@@ -29,7 +29,7 @@ equilens/
 │   │       │   ├── medmcqa_london_responses_claude.parquet
 │   │       │   ├── medmcqa_edinburgh_responses_claude.parquet
 │   │       │   └── medmcqa_dublin_responses_claude.parquet
-│   │       └── medmcqa_responses_gemini.parquet
+│   │       └── medmcqa_responses_gpt5.parquet
 │   ├── dataset/
 │   │   ├── __init__.py
 │   │   ├── amqa_processing.py            # HuggingFace → wide → long → inference subset
@@ -38,7 +38,7 @@ equilens/
 │   │   ├── __init__.py
 │   │   ├── claude.py                     # Anthropic Batch Messages API provider
 │   │   ├── config.py                     # Pydantic LLMConfig model
-│   │   ├── gemini.py                     # Google GenAI sequential provider
+│   │   ├── gpt5.py                       # OpenAI Batch API provider
 │   │   ├── prompts.py                    # Prompt loading & formatting
 │   │   ├── provider.py                   # Abstract LLMProvider + @register_provider
 │   │   └── schemas.py                    # MCQResponse (A/B/C/D structured output)
@@ -49,7 +49,7 @@ equilens/
 │   │   ├── medmcqa_system.json
 │   │   └── medmcqa_user.json
 │   ├── query_claude.py                   # Direct Claude querying script
-│   ├── query_gemini.py                   # Direct Gemini querying script
+│   ├── query_gpt5.py                     # Direct GPT-5 querying script
 │   ├── results/
 │   │   └── amqa/claude-sonnet-4-6/
 │   │       ├── ...temp0.1_seed0__*.parquet   # Raw inference results
@@ -269,7 +269,7 @@ Key config fields: `model_name`, `provider`, `temperature`, `seed`, `max_tokens`
 Abstract `LLMProvider` base class with `@register_provider` decorator.
 
 - **Claude**: Anthropic Batch Messages API, structured JSON output (`MCQResponse`)
-- **Gemini**: Google GenAI SDK, sequential with rate limiting, `response_json_schema`
+- **GPT-5**: OpenAI Batch API, structured output with `response_format`, reasoning effort low
 
 ### Analysis Pipeline (results_analysis/)
 
@@ -368,7 +368,7 @@ Triggered when user clicks one of the three city markers (London, Edinburgh, Dub
 2. **Selected City**: City name displayed prominently with the city's badge color. A back/close button returns to Phase 1 map.
 3. **Model Selection**: Dropdown selector for the target LLM model:
    - Claude Sonnet 4.6 (default, pre-selected)
-   - Gemini (if results exist)
+   - GPT-5 (if results exist)
 4. **Demographics Composition** (for AMQA adversarial attacks): Three sub-sections (Ethnicity, Gender, SES), each with:
    - A toggle to include/exclude this demographic axis from the attack
    - A horizontal stacked bar showing the composition split with percentage labels
@@ -392,7 +392,7 @@ Triggered when user clicks one of the three city markers (London, Edinburgh, Dub
 #### Zustand Store Additions
 
 ```typescript
-selectedModel: 'claude-sonnet-4-6' | 'gemini'  // default: 'claude-sonnet-4-6'
+selectedModel: 'claude-sonnet-4-6' | 'gpt-5'  // default: 'claude-sonnet-4-6'
 enabledBiasAxes: { ethnicity: boolean, gender: boolean, SES: boolean }  // default: all true
 enabledDisease: boolean  // default: true
 setSelectedModel, toggleBiasAxis, toggleDisease  // actions
