@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAppStore } from './store';
 import Logo from './components/Logo';
+import MapOverlays from './components/MapOverlays';
 import TerrainMap from './components/TerrainMap';
 import SandboxLayout from './components/SandboxLayout';
 import ResultsLayout from './components/ResultsLayout';
@@ -17,6 +18,7 @@ function App() {
   return (
     <>
       <Logo />
+      <MapOverlays />
       <AnimatePresence mode="wait">
         {phase === 'map' && (
           <motion.div

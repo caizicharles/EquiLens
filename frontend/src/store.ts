@@ -10,6 +10,7 @@ export interface AppStore {
   // Phase navigation
   phase: Phase;
   selectedCity: City | null;
+  hasSeenMapOverlays: boolean;
   setPhase: (phase: Phase) => void;
   selectCity: (city: City | null) => void;
 
@@ -33,8 +34,10 @@ export const useAppStore = create<AppStore>((set) => ({
   // Phase navigation
   phase: 'map',
   selectedCity: null,
+  hasSeenMapOverlays: false,
   setPhase: (phase) => set({ phase }),
-  selectCity: (city) => set({ selectedCity: city }),
+  selectCity: (city) =>
+    set(city ? { selectedCity: city, hasSeenMapOverlays: true } : { selectedCity: city }),
 
   // Sandbox configuration
   selectedModel: 'claude-sonnet-4-6',
