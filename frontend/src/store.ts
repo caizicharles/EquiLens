@@ -66,5 +66,6 @@ export const useAppStore = create<AppStore>((set) => ({
       enabledDisease: true,
       attackRunning: false,
       attackComplete: false,
+      hasSeenMapOverlays: false,
     }),
 }));
