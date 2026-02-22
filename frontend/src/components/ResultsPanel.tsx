@@ -20,6 +20,29 @@ const LOADING_STEPS = [
   { at: 0.86, label: () => 'Computing metrics...' },
 ];
 
+// Piecewise-linear mapping from wall-clock fraction → visual progress.
+// "Testing model..." (progress 0.14–0.68) consumes ~75% of real time,
+// while init/dataset and gathering/metrics zip through quickly.
+const TIME_TO_PROGRESS: [number, number][] = [
+  [0,    0],
+  [0.10, 0.14],   // init + dataset: fast
+  [0.85, 0.68],   // testing model: slow crawl
+  [1,    1],       // gathering + metrics: fast
+];
+
+function timeToProgress(t: number): number {
+  if (t <= 0) return 0;
+  if (t >= 1) return 1;
+  for (let i = 1; i < TIME_TO_PROGRESS.length; i++) {
+    const [t0, p0] = TIME_TO_PROGRESS[i - 1];
+    const [t1, p1] = TIME_TO_PROGRESS[i];
+    if (t <= t1) {
+      return p0 + (p1 - p0) * ((t - t0) / (t1 - t0));
+    }
+  }
+  return 1;
+}
+
 // ---------------------------------------------------------------------------
 // Loading overlay with progress bar
 // ---------------------------------------------------------------------------
@@ -33,7 +56,8 @@ function LoadingOverlay({ modelLabel }: { modelLabel: string }) {
   useEffect(() => {
     const tick = () => {
       const elapsed = Date.now() - startTime.current;
-      const pct = Math.min(elapsed / LOADING_DURATION, 1);
+      const timeFrac = Math.min(elapsed / LOADING_DURATION, 1);
+      const pct = timeToProgress(timeFrac);
       setProgress(pct);
 
       let idx = 0;
@@ -45,7 +69,7 @@ function LoadingOverlay({ modelLabel }: { modelLabel: string }) {
       }
       setStepIdx(idx);
 
-      if (pct >= 1) {
+      if (timeFrac >= 1) {
         finishAttack();
       } else {
         raf = requestAnimationFrame(tick);
