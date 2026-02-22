@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import type { City } from '../../store';
 import type { AnalysisMode } from '../../data/analysis';
 import { getAnalysis, getCrossCityAnalysis } from '../../data/analysis';
+import { renderAnalysisText } from './renderAnalysisText';
 import { colors, typography, spacing, radii, components } from '../../style';
 
 interface Props {
@@ -30,17 +31,24 @@ export default function TextSummary({ city, isCompare = false, mode }: Props) {
         borderRadius: radii.md,
       }}
     >
-      <p
+      <span
         style={{
           fontFamily: typography.body,
+          fontWeight: 600,
           fontSize: 12,
-          lineHeight: 1.55,
           color: colors.ink,
-          margin: 0,
+          display: 'block',
+          marginBottom: 4,
         }}
       >
-        {section.summary}
-      </p>
+        Summary
+      </span>
+      {renderAnalysisText(section.summary, {
+        fontFamily: typography.body,
+        fontSize: 12,
+        lineHeight: 1.55,
+        color: colors.ink,
+      })}
     </motion.div>
   );
 }

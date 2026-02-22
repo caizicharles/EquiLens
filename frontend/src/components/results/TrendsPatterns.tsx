@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import type { City } from '../../store';
 import type { AnalysisMode } from '../../data/analysis';
 import { getAnalysis, getCrossCityAnalysis } from '../../data/analysis';
+import { renderAnalysisText } from './renderAnalysisText';
 import { colors, typography, spacing, radii } from '../../style';
 
 interface Props {
@@ -43,17 +44,12 @@ export default function TrendsPatterns({ city, isCompare = false, mode }: Props)
       >
         Findings
       </span>
-      <p
-        style={{
-          fontFamily: typography.body,
-          fontSize: 11,
-          lineHeight: 1.55,
-          color: colors.ink,
-          margin: 0,
-        }}
-      >
-        {section.findings}
-      </p>
+      {renderAnalysisText(section.findings, {
+        fontFamily: typography.body,
+        fontSize: 11,
+        lineHeight: 1.55,
+        color: colors.ink,
+      })}
     </motion.div>
   );
 }

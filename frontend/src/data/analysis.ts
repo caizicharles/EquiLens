@@ -60,17 +60,31 @@ export function parseVerdictStatus(verdict: string | undefined): VerdictStatus {
 }
 
 /**
- * Extract the short badge label from a verdict string.
+ * Short badge label for the verdict status.
  */
 export function verdictBadgeLabel(status: VerdictStatus): string {
   switch (status) {
     case 'recommended':
-      return 'Recommended for Clinical Deployment';
+      return 'Recommended';
     case 'conditional':
       return 'Conditionally Recommended';
     case 'not_recommended':
-      return 'Not Recommended for Clinical Deployment';
+      return 'Not Recommended';
   }
+}
+
+/**
+ * Strip the status prefix (e.g. "NOT RECOMMENDED. ") from a verdict string,
+ * leaving only the explanatory text. Capitalises the first remaining character.
+ */
+export function stripVerdictPrefix(verdict: string): string {
+  const stripped = verdict
+    .replace(
+      /^(?:CONDITIONALLY\s+RECOMMENDED|NOT\s+RECOMMENDED|RECOMMENDED)\.?\s*/i,
+      '',
+    );
+  if (stripped.length === 0) return stripped;
+  return stripped.charAt(0).toUpperCase() + stripped.slice(1);
 }
 
 /**

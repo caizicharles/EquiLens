@@ -1,7 +1,14 @@
 import { motion } from 'framer-motion';
 import type { City } from '../../store';
 import type { AnalysisMode } from '../../data/analysis';
-import { getAnalysis, parseVerdictStatus, verdictBadgeLabel } from '../../data/analysis';
+import {
+  getAnalysis,
+  parseVerdictStatus,
+  verdictBadgeLabel,
+  stripVerdictPrefix,
+} from '../../data/analysis';
+import { renderAnalysisText } from './renderAnalysisText';
+import { renderMetrics } from './renderAnalysisText';
 import { colors, typography, spacing, radii } from '../../style';
 
 interface Props {
@@ -14,6 +21,7 @@ export default function VerdictSection({ city, mode }: Props) {
   if (!section.verdict) return null;
 
   const status = parseVerdictStatus(section.verdict);
+  const verdictText = stripVerdictPrefix(section.verdict);
 
   const badgeBg =
     status === 'recommended'
@@ -39,56 +47,82 @@ export default function VerdictSection({ city, mode }: Props) {
       {/* Verdict card */}
       <div
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: spacing.sm,
           background: 'rgba(255, 255, 255, 0.7)',
           border: `1px solid ${borderColor}`,
           borderRadius: radii.md,
           padding: `${spacing.sm}px ${spacing.md}px`,
         }}
       >
-        <span
+        <div
           style={{
-            fontFamily: typography.body,
-            fontWeight: 700,
-            fontSize: 11,
-            color: '#fff',
-            background: badgeBg,
-            borderRadius: radii.pill,
-            padding: '4px 14px',
-            whiteSpace: 'nowrap',
-            flexShrink: 0,
+            display: 'flex',
+            alignItems: 'center',
+            gap: spacing.sm,
+            marginBottom: 4,
           }}
         >
-          {verdictBadgeLabel(status)}
-        </span>
-        <span
+          <span
+            style={{
+              fontFamily: typography.body,
+              fontWeight: 600,
+              fontSize: 12,
+              color: colors.ink,
+              flexShrink: 0,
+            }}
+          >
+            Verdict
+          </span>
+          <span
+            style={{
+              fontFamily: typography.body,
+              fontWeight: 700,
+              fontSize: 11,
+              color: '#fff',
+              background: badgeBg,
+              borderRadius: radii.pill,
+              padding: '4px 14px',
+              whiteSpace: 'nowrap',
+              flexShrink: 0,
+            }}
+          >
+            {verdictBadgeLabel(status)}
+          </span>
+        </div>
+        <p
           style={{
             fontFamily: typography.body,
             fontSize: 11,
             color: colors.inkMuted,
-            lineHeight: 1.4,
+            lineHeight: 1.55,
+            margin: 0,
           }}
         >
-          {section.verdict}
-        </span>
+          {renderMetrics(verdictText)}
+        </p>
       </div>
 
-      {/* Recommendation text */}
-      <p
-        style={{
+      {/* Recommendation */}
+      <div>
+        <span
+          style={{
+            fontFamily: typography.body,
+            fontWeight: 600,
+            fontSize: 12,
+            color: colors.ink,
+            display: 'block',
+            marginBottom: 4,
+          }}
+        >
+          Recommendation
+        </span>
+        {renderAnalysisText(section.recommendation, {
           fontFamily: typography.body,
           fontSize: 11,
           fontStyle: 'italic',
           color: colors.inkMuted,
-          opacity: 0.85,
-          margin: 0,
           lineHeight: 1.5,
-        }}
-      >
-        {section.recommendation}
-      </p>
+        })}
+      </div>
     </motion.div>
   );
 }
