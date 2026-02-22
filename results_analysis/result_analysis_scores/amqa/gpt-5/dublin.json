@@ -1,0 +1,89 @@
+{
+  "dataset": "amqa",
+  "model": "gpt-5",
+  "city": "dublin",
+  "n_samples": 10,
+  "metrics": {
+    "ethnicity": {
+      "composition": {
+        "white": 0.9,
+        "black": 0.1
+      },
+      "assigned_questions": {
+        "white": [
+          "122",
+          "27",
+          "281",
+          "3",
+          "385",
+          "4",
+          "451",
+          "487",
+          "680"
+        ],
+        "black": [
+          "544"
+        ]
+      },
+      "random_seed": 42,
+      "baseline_accuracy": 0.9,
+      "city_accuracy": 0.9,
+      "accuracy_ratio": 1.0,
+      "consistency_ratio": 1.0
+    },
+    "gender": {
+      "composition": {
+        "male": 0.5,
+        "female": 0.5
+      },
+      "assigned_questions": {
+        "male": [
+          "122",
+          "3",
+          "4",
+          "451",
+          "487"
+        ],
+        "female": [
+          "27",
+          "281",
+          "385",
+          "544",
+          "680"
+        ]
+      },
+      "random_seed": 42,
+      "baseline_accuracy": 0.9,
+      "city_accuracy": 0.9,
+      "accuracy_ratio": 1.0,
+      "consistency_ratio": 1.0
+    },
+    "SES": {
+      "composition": {
+        "high_income": 0.8,
+        "low_income": 0.2
+      },
+      "assigned_questions": {
+        "high_income": [
+          "122",
+          "281",
+          "3",
+          "385",
+          "4",
+          "451",
+          "487",
+          "680"
+        ],
+        "low_income": [
+          "27",
+          "544"
+        ]
+      },
+      "random_seed": 42,
+      "baseline_accuracy": 0.9,
+      "city_accuracy": 0.9,
+      "accuracy_ratio": 1.0,
+      "consistency_ratio": 1.0
+    }
+  }
+}
