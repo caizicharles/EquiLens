@@ -250,7 +250,12 @@ function ModelSelector({
 // Main SandboxPanel
 // ---------------------------------------------------------------------------
 
-export default function SandboxPanel() {
+interface SandboxPanelProps {
+  /** When true, the panel is shown in results phase — button greyed out, back-to-map shown */
+  resultsMode?: boolean;
+}
+
+export default function SandboxPanel({ resultsMode = false }: SandboxPanelProps) {
   const selectedCity = useAppStore((s) => s.selectedCity);
   const selectedModel = useAppStore((s) => s.selectedModel);
   const enabledBiasAxes = useAppStore((s) => s.enabledBiasAxes);
@@ -277,6 +282,9 @@ export default function SandboxPanel() {
     selectCity(null as never);
     setPhase('map');
   };
+
+  // In results mode the button is disabled (already completed)
+  const buttonDisabled = resultsMode || attackRunning || !hasAnyEnabled;
 
   return (
     <div
@@ -305,22 +313,24 @@ export default function SandboxPanel() {
         >
           Sandbox
         </h2>
-        <button
-          onClick={handleBack}
-          style={{
-            fontFamily: typography.body,
-            fontSize: 12,
-            fontWeight: 500,
-            padding: '5px 14px',
-            borderRadius: 6,
-            border: `1px solid ${colors.border}`,
-            background: 'transparent',
-            color: colors.inkMuted,
-            cursor: 'pointer',
-          }}
-        >
-          Back
-        </button>
+        {!resultsMode && (
+          <button
+            onClick={handleBack}
+            style={{
+              fontFamily: typography.body,
+              fontSize: 12,
+              fontWeight: 500,
+              padding: '5px 14px',
+              borderRadius: 6,
+              border: `1px solid ${colors.border}`,
+              background: 'transparent',
+              color: colors.inkMuted,
+              cursor: 'pointer',
+            }}
+          >
+            Back
+          </button>
+        )}
       </div>
 
       {/* City badge */}
@@ -404,10 +414,10 @@ export default function SandboxPanel() {
 
       {/* Run Attack button */}
       <motion.button
-        whileHover={!attackRunning && hasAnyEnabled ? { scale: 1.02 } : {}}
-        whileTap={!attackRunning && hasAnyEnabled ? { scale: 0.98 } : {}}
-        onClick={runAttack}
-        disabled={attackRunning || !hasAnyEnabled}
+        whileHover={!buttonDisabled ? { scale: 1.02 } : {}}
+        whileTap={!buttonDisabled ? { scale: 0.98 } : {}}
+        onClick={resultsMode ? undefined : runAttack}
+        disabled={buttonDisabled}
         style={{
           fontFamily: typography.body,
           fontSize: 15,
@@ -415,19 +425,24 @@ export default function SandboxPanel() {
           padding: '12px 24px',
           borderRadius: 10,
           border: 'none',
-          background: attackRunning
+          background: resultsMode
             ? colors.surfaceMuted
-            : hasAnyEnabled
-              ? colors.green400
-              : colors.surfaceMuted,
-          color: attackRunning
+            : attackRunning
+              ? colors.surfaceMuted
+              : hasAnyEnabled
+                ? colors.green400
+                : colors.surfaceMuted,
+          color: resultsMode
             ? colors.inkLight
-            : hasAnyEnabled
-              ? '#fff'
-              : colors.inkLight,
-          cursor: attackRunning || !hasAnyEnabled ? 'not-allowed' : 'pointer',
-          boxShadow: hasAnyEnabled && !attackRunning ? shadows.glow : 'none',
-          transition: 'background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease',
+            : attackRunning
+              ? colors.inkLight
+              : hasAnyEnabled
+                ? '#fff'
+                : colors.inkLight,
+          cursor: buttonDisabled ? 'not-allowed' : 'pointer',
+          boxShadow: !resultsMode && hasAnyEnabled && !attackRunning ? shadows.glow : 'none',
+          opacity: resultsMode ? 0.4 : 1,
+          transition: 'background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -450,6 +465,28 @@ export default function SandboxPanel() {
           'Run Attack'
         )}
       </motion.button>
+
+      {/* Back to Map — shown only in results mode */}
+      {resultsMode && (
+        <button
+          onClick={handleBack}
+          style={{
+            fontFamily: typography.body,
+            fontWeight: 500,
+            fontSize: 13,
+            padding: '8px 20px',
+            borderRadius: 8,
+            border: `1px solid ${colors.border}`,
+            background: 'transparent',
+            color: colors.inkMuted,
+            cursor: 'pointer',
+            width: '100%',
+            textAlign: 'center',
+          }}
+        >
+          Back to Map
+        </button>
+      )}
     </div>
   );
 }

@@ -4,7 +4,6 @@ import { TerrainRenderer } from '../terrain/TerrainRenderer';
 import { BOUNDS } from '../terrain/projection';
 import MapLabels from './MapLabels';
 import SandboxPanel from './SandboxPanel';
-import { colors } from '../style';
 
 // Same aspect-ratio logic as TerrainMap, but sized for left 55%
 const LAT_RANGE = BOUNDS.maxLat - BOUNDS.minLat;
@@ -14,8 +13,7 @@ const COS_FACTOR = Math.cos((MID_LAT * Math.PI) / 180);
 const GEO_ASPECT = (LNG_RANGE * COS_FACTOR) / LAT_RANGE;
 
 const MAP_FRACTION = 0.55;
-const PANEL_FRACTION = 0.40;
-const STRIPE_FRACTION = 0.05;
+const PANEL_FRACTION = 0.45;
 const PADDING = 32;
 
 function computeMapSize(vpW: number, vpH: number) {
@@ -109,7 +107,7 @@ export default function SandboxLayout() {
         </div>
       </motion.div>
 
-      {/* Center: Config panel (40%) */}
+      {/* Right: Config panel (45%) */}
       <motion.div
         initial={{ x: 60, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
@@ -126,40 +124,6 @@ export default function SandboxLayout() {
         }}
       >
         <SandboxPanel />
-      </motion.div>
-
-      {/* Right: Results stripe (5%) */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6, delay: 0.3 }}
-        style={{
-          width: `${STRIPE_FRACTION * 100}%`,
-          height: '100%',
-          flexShrink: 0,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderLeft: `1px solid ${colors.borderLight}`,
-          background: 'rgba(240, 244, 236, 0.3)',
-        }}
-      >
-        <div
-          style={{
-            writingMode: 'vertical-rl',
-            textOrientation: 'mixed',
-            fontFamily: "'DM Sans', sans-serif",
-            fontSize: 11,
-            fontWeight: 500,
-            color: colors.inkLight,
-            letterSpacing: '0.1em',
-            textTransform: 'uppercase',
-            opacity: 0.5,
-            userSelect: 'none',
-          }}
-        >
-          Results
-        </div>
       </motion.div>
     </div>
   );

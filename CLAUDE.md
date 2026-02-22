@@ -360,7 +360,7 @@ Triggered when user clicks one of the three city markers (London, Edinburgh, Dub
 - The UK terrain map slides LEFT (animates to occupy roughly the left 55% of the viewport)
 - The selected city's marker becomes highlighted (larger dot, brighter glow, other cities dim slightly)
 - A configuration panel slides in from the RIGHT edge, occupying roughly the right 40% of the viewport
-- A narrow vertical stripe on the far right is reserved for the results summary (initially empty/placeholder)
+- No results stripe — the right side is fully occupied by the sandbox config panel
 
 #### Sandbox Config Panel (right panel) — top to bottom:
 
@@ -382,10 +382,6 @@ Triggered when user clicks one of the three city markers (London, Edinburgh, Dub
    - Dublin: Cancer 42.5%, Cardiovascular 39.7%, Respiratory 17.8%
 6. **Run Attack Button**: Primary action button (colors.green400 bg, white text). On click → Phase 3 (loads pre-computed results).
 
-#### Results Stripe (far right)
-
-Narrow vertical area (~5% width) on the far right edge, initially showing a placeholder. After "Run Attack", expands or transitions to full results dashboard (Phase 3).
-
 #### State Machine Transitions
 
 - Phase 1 (map) → click city → Phase 2 (sandbox) with selected city
@@ -402,19 +398,38 @@ enabledDisease: boolean  // default: true
 setSelectedModel, toggleBiasAxis, toggleDisease  // actions
 ```
 
-### Phase 3: Results Visualisation
+### Phase 3: Results — 2-Column Layout
+
+When "Run Attack" completes, the terrain map is HIDDEN entirely. The screen becomes a clean 2-column layout. No collapsed sandbox, no map in background.
+
+#### Layout
+
+- **LEFT (~33% width)**: The Sandbox Config panel — same `SandboxPanel` component as Phase 2, fully visible with all toggles, demographics bars, disease bars, model selector, and city name. The "Run Attack" button is greyed out (opacity 0.4, surfaceMuted bg, not-allowed cursor) to indicate completion. A "Back to Map" button below it returns to Phase 1. Thin `borderLight` right border separates from results.
+
+- **RIGHT (~67% width)**: The Results Panel — full height, scrollable internally, contains all visualisations behind a two-tab interface (City Results / Compare All).
+
+#### Transition Animations
+
+- Phase 2 → Phase 3: Map fades out (0.3s). Sandbox panel stays in place. Results panel slides in from the right (translateX, 0.4s).
+- Phase 3 → Phase 1: Both columns fade out, map fades in.
+
+#### Results Panel Content
 
 The frontend reads pre-computed JSONs from `results_analysis/result_analysis_scores/`. No live LLM inference needed.
 
-**AMQA → Bias consistency visualisations:**
-- Accuracy ratio bars per bias_category
-- Consistency ratio comparison (majority vs minority)
-- Per-question drill-down showing assigned groups
+**Tab 1 — City Results** (selected city):
+- AMQA Bias Analysis:
+  - Accuracy ratio horizontal bar chart per enabled bias axis (color: green=helps, blue=neutral, red=hurts)
+  - Consistency ratio gauge (0.5–1.5 range, animated marker, "Bias Signal Detected" badge for notable values)
+- MedMCQA Disease Performance (if disease toggle ON):
+  - 4 aggregate metric cards (Accuracy, Precision, Recall, F1) with color thresholds
+  - Disease accuracy vertical bar chart with aggregate reference line
+  - Disease metrics detail table
 
-**MedMCQA → Disease performance visualisations:**
-- Accuracy by disease category (grouped bars)
-- Aggregate metrics radar/table
-- Cross-city comparison
+**Tab 2 — Compare All** (all 3 cities side-by-side):
+- Cross-city accuracy ratio grouped bar chart
+- Cross-city consistency ratio grouped bar chart
+- Cross-city disease performance comparison table (min/max cell tinting)
 
 ### Tech Stack
 
