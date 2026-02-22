@@ -286,12 +286,13 @@ export default function ResultsPanel() {
             {activeTab === 'city' ? (
               <CityResultsTab
                 city={selectedCity}
+                model={selectedModel}
                 enabledDemographics={enabledDemographics}
                 enabledDisease={enabledDisease}
                 mode={mode}
               />
             ) : (
-              <CompareAllTab mode={mode} />
+              <CompareAllTab model={selectedModel} mode={mode} />
             )}
           </motion.div>
         )}

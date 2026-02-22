@@ -1,4 +1,4 @@
-export type ModelId = 'claude-sonnet-4-6' | 'gemini';
+export type ModelId = 'claude-sonnet-4-6' | 'gpt-5';
 
 export interface ModelOption {
   id: ModelId;
@@ -15,9 +15,9 @@ export const MODELS: ModelOption[] = [
     available: true,
   },
   {
-    id: 'gemini',
-    label: 'Gemini 2.0 Flash',
-    shortLabel: 'Gemini',
+    id: 'gpt-5',
+    label: 'GPT-5',
+    shortLabel: 'GPT-5',
     available: true,
   },
 ];

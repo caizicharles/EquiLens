@@ -6,7 +6,8 @@
       "Bash(npx tsc:*)",
       "Bash(timeout 10 npm run dev:*)",
       "Bash(npm run build:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(npx vite build:*)"
     ]
   }
 }

@@ -1,5 +1,7 @@
 import { motion } from 'framer-motion';
-import { MEDMCQA_RESULTS, ALL_CITIES, CITY_LABELS } from '../../data/results';
+import type { ModelId } from '../../data/models';
+import { getMedMCQAResults, ALL_CITIES, CITY_LABELS, type CityMedMCQAResults } from '../../data/results';
+import type { City } from '../../store';
 import { colors, typography, radii } from '../../style';
 
 const CITY_HEADER_COLORS: Record<string, string> = {
@@ -15,25 +17,25 @@ interface RowDef {
   isPct: boolean;
 }
 
-function buildRows(): RowDef[] {
+function buildRows(results: Record<City, CityMedMCQAResults>): RowDef[] {
   const rows: RowDef[] = [
     {
       label: 'Aggregate Accuracy',
       bold: true,
-      getter: (c) => MEDMCQA_RESULTS[c as keyof typeof MEDMCQA_RESULTS].aggregate.accuracy,
+      getter: (c) => results[c as City].aggregate.accuracy,
       isPct: true,
     },
     {
       label: 'Aggregate F1',
       bold: true,
-      getter: (c) => MEDMCQA_RESULTS[c as keyof typeof MEDMCQA_RESULTS].aggregate.f1_macro,
+      getter: (c) => results[c as City].aggregate.f1_macro,
       isPct: true,
     },
   ];
 
   const diseaseSet = new Set<string>();
   for (const city of ALL_CITIES) {
-    for (const d of Object.keys(MEDMCQA_RESULTS[city].diseases)) {
+    for (const d of Object.keys(results[city].diseases)) {
       diseaseSet.add(d);
     }
   }
@@ -43,7 +45,7 @@ function buildRows(): RowDef[] {
       label: `${disease} Acc.`,
       bold: false,
       getter: (c) => {
-        const d = MEDMCQA_RESULTS[c as keyof typeof MEDMCQA_RESULTS].diseases[disease];
+        const d = results[c as City].diseases[disease];
         return d ? d.accuracy : '—';
       },
       isPct: true,
@@ -54,11 +56,13 @@ function buildRows(): RowDef[] {
 }
 
 interface Props {
+  model: ModelId;
   compact?: boolean;
 }
 
-export default function CrossCityTable({ compact = false }: Props) {
-  const rows = buildRows();
+export default function CrossCityTable({ model, compact = false }: Props) {
+  const results = getMedMCQAResults(model);
+  const rows = buildRows(results);
   const fs = compact ? 10 : 12;
   const pad = compact ? '4px 6px' : '7px 10px';
 

@@ -10,7 +10,8 @@ import {
   LabelList,
 } from 'recharts';
 import type { BiasAxisKey } from '../../store';
-import { AMQA_RESULTS, BIAS_AXIS_LABELS, ALL_CITIES, CITY_LABELS } from '../../data/results';
+import type { ModelId } from '../../data/models';
+import { getAMQAResults, BIAS_AXIS_LABELS, ALL_CITIES, CITY_LABELS } from '../../data/results';
 import { colors, typography } from '../../style';
 
 const CITY_COLORS: Record<string, string> = {
@@ -22,16 +23,18 @@ const CITY_COLORS: Record<string, string> = {
 interface Props {
   metric: 'accuracy_ratio' | 'consistency_ratio';
   title: string;
+  model: ModelId;
   compact?: boolean;
 }
 
-export default function CrossCityBars({ metric, title, compact = false }: Props) {
+export default function CrossCityBars({ metric, title, model, compact = false }: Props) {
   const axes: BiasAxisKey[] = ['ethnicity', 'gender', 'SES'];
+  const amqaResults = getAMQAResults(model);
 
   const chartData = axes.map((axis) => {
     const row: Record<string, string | number> = { axis: BIAS_AXIS_LABELS[axis] };
     for (const city of ALL_CITIES) {
-      row[city] = AMQA_RESULTS[city][axis][metric];
+      row[city] = amqaResults[city][axis][metric];
     }
     return row;
   });

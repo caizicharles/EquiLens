@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion';
 import type { City } from '../../store';
+import type { ModelId } from '../../data/models';
 import type { AnalysisMode } from '../../data/analysis';
-import { AMQA_RESULTS, MEDMCQA_RESULTS } from '../../data/results';
+import { getAMQAResults, getMedMCQAResults } from '../../data/results';
 import AccuracyRatioChart from './AccuracyRatioChart';
 import ConsistencyGauge from './ConsistencyGauge';
 import AggregateCards from './AggregateCards';
@@ -13,14 +14,15 @@ import { colors, typography, spacing } from '../../style';
 
 interface Props {
   city: City;
+  model: ModelId;
   enabledDemographics: boolean;
   enabledDisease: boolean;
   mode: AnalysisMode;
 }
 
-export default function CityResultsTab({ city, enabledDemographics, enabledDisease, mode }: Props) {
-  const amqa = AMQA_RESULTS[city];
-  const medmcqa = MEDMCQA_RESULTS[city];
+export default function CityResultsTab({ city, model, enabledDemographics, enabledDisease, mode }: Props) {
+  const amqa = getAMQAResults(model)[city];
+  const medmcqa = getMedMCQAResults(model)[city];
 
   if (!enabledDemographics && !enabledDisease) {
     return (

@@ -1,4 +1,5 @@
 import type { City, BiasAxisKey } from '../store';
+import type { ModelId } from './models';
 
 // ---------------------------------------------------------------------------
 // AMQA Types & Data
@@ -13,7 +14,7 @@ export interface AMQAMetrics {
 
 export type CityAMQAResults = Record<BiasAxisKey, AMQAMetrics>;
 
-export const AMQA_RESULTS: Record<City, CityAMQAResults> = {
+const AMQA_CLAUDE: Record<City, CityAMQAResults> = {
   london: {
     ethnicity: {
       baseline_accuracy: 0.9,
@@ -76,6 +77,78 @@ export const AMQA_RESULTS: Record<City, CityAMQAResults> = {
   },
 };
 
+const AMQA_GPT5: Record<City, CityAMQAResults> = {
+  london: {
+    ethnicity: {
+      baseline_accuracy: 0.9,
+      city_accuracy: 0.9,
+      accuracy_ratio: 1.0,
+      consistency_ratio: 1.0,
+    },
+    gender: {
+      baseline_accuracy: 0.9,
+      city_accuracy: 0.9,
+      accuracy_ratio: 1.0,
+      consistency_ratio: 1.0,
+    },
+    SES: {
+      baseline_accuracy: 0.9,
+      city_accuracy: 0.9,
+      accuracy_ratio: 1.0,
+      consistency_ratio: 1.0,
+    },
+  },
+  edinburgh: {
+    ethnicity: {
+      baseline_accuracy: 0.9,
+      city_accuracy: 0.9,
+      accuracy_ratio: 1.0,
+      consistency_ratio: 1.0,
+    },
+    gender: {
+      baseline_accuracy: 0.9,
+      city_accuracy: 0.9,
+      accuracy_ratio: 1.0,
+      consistency_ratio: 1.0,
+    },
+    SES: {
+      baseline_accuracy: 0.9,
+      city_accuracy: 0.9,
+      accuracy_ratio: 1.0,
+      consistency_ratio: 1.0,
+    },
+  },
+  dublin: {
+    ethnicity: {
+      baseline_accuracy: 0.9,
+      city_accuracy: 0.9,
+      accuracy_ratio: 1.0,
+      consistency_ratio: 1.0,
+    },
+    gender: {
+      baseline_accuracy: 0.9,
+      city_accuracy: 0.9,
+      accuracy_ratio: 1.0,
+      consistency_ratio: 1.0,
+    },
+    SES: {
+      baseline_accuracy: 0.9,
+      city_accuracy: 0.9,
+      accuracy_ratio: 1.0,
+      consistency_ratio: 1.0,
+    },
+  },
+};
+
+const AMQA_BY_MODEL: Record<ModelId, Record<City, CityAMQAResults>> = {
+  'claude-sonnet-4-6': AMQA_CLAUDE,
+  'gpt-5': AMQA_GPT5,
+};
+
+export function getAMQAResults(model: ModelId): Record<City, CityAMQAResults> {
+  return AMQA_BY_MODEL[model];
+}
+
 // ---------------------------------------------------------------------------
 // MedMCQA Types & Data
 // ---------------------------------------------------------------------------
@@ -103,7 +176,7 @@ export interface CityMedMCQAResults {
   diseases: Record<string, DiseaseMetrics>;
 }
 
-export const MEDMCQA_RESULTS: Record<City, CityMedMCQAResults> = {
+const MEDMCQA_CLAUDE: Record<City, CityMedMCQAResults> = {
   london: {
     aggregate: {
       accuracy: 0.8980,
@@ -213,6 +286,126 @@ export const MEDMCQA_RESULTS: Record<City, CityMedMCQAResults> = {
     },
   },
 };
+
+const MEDMCQA_GPT5: Record<City, CityMedMCQAResults> = {
+  london: {
+    aggregate: {
+      accuracy: 0.9200,
+      precision_macro: 0.9304,
+      recall_macro: 0.9234,
+      f1_macro: 0.9241,
+      n_valid: 100,
+      n_samples: 100,
+    },
+    diseases: {
+      Cancer: {
+        accuracy: 1.0,
+        precision_macro: 1.0,
+        recall_macro: 1.0,
+        f1_macro: 1.0,
+        n_valid: 54,
+        composition: 0.5342,
+      },
+      Cardiovascular: {
+        accuracy: 0.8636,
+        precision_macro: 0.8929,
+        recall_macro: 0.8944,
+        f1_macro: 0.8728,
+        n_valid: 22,
+        composition: 0.2201,
+      },
+      'Dementia / Neuro': {
+        accuracy: 0.7917,
+        precision_macro: 0.7917,
+        recall_macro: 0.7893,
+        f1_macro: 0.7769,
+        n_valid: 24,
+        composition: 0.2458,
+      },
+    },
+  },
+  edinburgh: {
+    aggregate: {
+      accuracy: 0.9200,
+      precision_macro: 0.9183,
+      recall_macro: 0.9283,
+      f1_macro: 0.9209,
+      n_valid: 100,
+      n_samples: 100,
+    },
+    diseases: {
+      Cancer: {
+        accuracy: 0.9808,
+        precision_macro: 0.9792,
+        recall_macro: 0.9808,
+        f1_macro: 0.9791,
+        n_valid: 52,
+        composition: 0.5435,
+      },
+      Cardiovascular: {
+        accuracy: 0.9231,
+        precision_macro: 0.9250,
+        recall_macro: 0.9083,
+        f1_macro: 0.9141,
+        n_valid: 26,
+        composition: 0.2391,
+      },
+      Respiratory: {
+        accuracy: 0.7727,
+        precision_macro: 0.7139,
+        recall_macro: 0.8667,
+        f1_macro: 0.7571,
+        n_valid: 22,
+        composition: 0.2174,
+      },
+    },
+  },
+  dublin: {
+    aggregate: {
+      accuracy: 0.8900,
+      precision_macro: 0.8840,
+      recall_macro: 0.8814,
+      f1_macro: 0.8798,
+      n_valid: 100,
+      n_samples: 100,
+    },
+    diseases: {
+      Cancer: {
+        accuracy: 0.9070,
+        precision_macro: 0.9113,
+        recall_macro: 0.9079,
+        f1_macro: 0.9091,
+        n_valid: 43,
+        composition: 0.4247,
+      },
+      Cardiovascular: {
+        accuracy: 0.8780,
+        precision_macro: 0.8944,
+        recall_macro: 0.8639,
+        f1_macro: 0.8603,
+        n_valid: 41,
+        composition: 0.3973,
+      },
+      Respiratory: {
+        accuracy: 0.8750,
+        precision_macro: 0.8250,
+        recall_macro: 0.9018,
+        f1_macro: 0.8339,
+        n_valid: 16,
+        composition: 0.1781,
+      },
+    },
+  },
+};
+
+const MEDMCQA_BY_MODEL: Record<ModelId, Record<City, CityMedMCQAResults>> = {
+  'claude-sonnet-4-6': MEDMCQA_CLAUDE,
+  'gpt-5': MEDMCQA_GPT5,
+};
+
+export function getMedMCQAResults(model: ModelId): Record<City, CityMedMCQAResults> {
+  return MEDMCQA_BY_MODEL[model];
+}
 
 // ---------------------------------------------------------------------------
 // Helpers

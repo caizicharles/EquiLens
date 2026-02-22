@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import type { ModelId } from '../../data/models';
 import type { AnalysisMode } from '../../data/analysis';
 import CrossCityBars from './CrossCityBars';
 import CrossCityTable from './CrossCityTable';
@@ -7,10 +8,11 @@ import TrendsPatterns from './TrendsPatterns';
 import { spacing } from '../../style';
 
 interface Props {
+  model: ModelId;
   mode: AnalysisMode;
 }
 
-export default function CompareAllTab({ mode }: Props) {
+export default function CompareAllTab({ model, mode }: Props) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: spacing.sm, height: '100%' }}>
       {/* Text Summary */}
@@ -26,10 +28,10 @@ export default function CompareAllTab({ mode }: Props) {
           style={{ display: 'flex', gap: spacing.sm, flex: 1, minHeight: 0 }}
         >
           <div style={{ flex: 1, minWidth: 0 }}>
-            <CrossCityBars metric="accuracy_ratio" title="Accuracy Ratio by City" compact />
+            <CrossCityBars metric="accuracy_ratio" title="Accuracy Ratio by City" model={model} compact />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <CrossCityBars metric="consistency_ratio" title="Consistency Ratio by City" compact />
+            <CrossCityBars metric="consistency_ratio" title="Consistency Ratio by City" model={model} compact />
           </div>
         </motion.div>
 
@@ -40,7 +42,7 @@ export default function CompareAllTab({ mode }: Props) {
           transition={{ duration: 0.3, delay: 0.1 }}
           style={{ flex: '0 0 auto' }}
         >
-          <CrossCityTable compact />
+          <CrossCityTable model={model} compact />
         </motion.div>
       </div>
 
